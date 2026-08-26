@@ -2,6 +2,30 @@
 -- Separate from public.youtube_video so we can ingest the raw AI Engineer
 -- channel dump and iterate on relationship tables later.
 
+-- Fresh-replay compatibility. These objects existed before this migration on
+-- the original project. Keeping them inside an already-recorded migration
+-- makes local resets reproducible without creating a new migration that a
+-- production db push could mistake for pending work.
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  new.updated_at = timezone('utc', now());
+  return new;
+end;
+$$;
+
+create table if not exists public.challenge (
+  challenge_id uuid primary key
+);
+
+create table if not exists public.attempt (
+  attempt_id uuid primary key
+);
+
 create table if not exists public.research_starter_videos (
   video_id text primary key,
   title text not null,
