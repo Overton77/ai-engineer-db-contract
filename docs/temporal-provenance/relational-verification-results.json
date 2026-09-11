@@ -1,0 +1,151 @@
+{
+  "status": "passed",
+  "executedAt": "2026-09-10T20:32:21.442Z",
+  "runtime": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "package": "@electric-sql/pglite@0.5.8",
+  "testCount": 34,
+  "tests": [
+    {
+      "name": "Consolidated schema and four sealed snapshots execute",
+      "status": "passed"
+    },
+    {
+      "name": "Employment initially has no known end",
+      "status": "passed"
+    },
+    {
+      "name": "Later discovery admits a departure",
+      "status": "passed"
+    },
+    {
+      "name": "Date correction retains the same engagement identity",
+      "status": "passed"
+    },
+    {
+      "name": "Rehire is a second engagement with a preserved gap",
+      "status": "passed"
+    },
+    {
+      "name": "Contemporaneous knowledge does not see later rehire",
+      "status": "passed"
+    },
+    {
+      "name": "Actual leave event has corrected occurrence at latest K",
+      "status": "passed"
+    },
+    {
+      "name": "Repo made-public and hosted release remain separate events",
+      "status": "passed"
+    },
+    {
+      "name": "Repo archival becomes true at its exact half-open boundary",
+      "status": "passed"
+    },
+    {
+      "name": "Archival discovery delay uses event encounter, not repo discovery",
+      "status": "passed"
+    },
+    {
+      "name": "Advance discovery has negative delay and explicit scheduled mode",
+      "status": "passed"
+    },
+    {
+      "name": "Uncertain occurrence yields bounded delay and no fabricated scalar",
+      "status": "passed"
+    },
+    {
+      "name": "One year ago features use immutable initial specification",
+      "status": "passed"
+    },
+    {
+      "name": "Six months ago features include revised spec and search",
+      "status": "passed"
+    },
+    {
+      "name": "Two months ago features include third scoped capability",
+      "status": "passed"
+    },
+    {
+      "name": "Older knowledge snapshot never leaks later feature admissions",
+      "status": "passed"
+    },
+    {
+      "name": "Pro plan does not imply features in an unknown free-plan scope",
+      "status": "passed"
+    },
+    {
+      "name": "Historical support is admitted at old K and withdrawn at new K",
+      "status": "passed"
+    },
+    {
+      "name": "Old packet retains original publication and unchanged chunk after withdrawal",
+      "status": "passed"
+    },
+    {
+      "name": "Cross-tenant history query returns no foreign segments",
+      "status": "passed"
+    },
+    {
+      "name": "Old segment mutation is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "Captured chunk mutation is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "Adding segment to sealed revision is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "Adding publication member after seal is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "Adding packet member after recorded run is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "A feature cannot belong to a different product by ID accident",
+      "status": "passed"
+    },
+    {
+      "name": "A feature cannot borrow another feature specification",
+      "status": "passed"
+    },
+    {
+      "name": "Typed payload cannot be attached to the wrong stream kind",
+      "status": "passed"
+    },
+    {
+      "name": "Payload from another engagement cannot attach to valid segment",
+      "status": "passed"
+    },
+    {
+      "name": "Missing typed payload prevents batch seal",
+      "status": "passed"
+    },
+    {
+      "name": "Overlapping states within one revision are rejected",
+      "status": "passed"
+    },
+    {
+      "name": "An empty replacement does not revive old accepted segments",
+      "status": "passed"
+    },
+    {
+      "name": "NULL stream cannot bypass composite foreign-key enforcement",
+      "status": "passed"
+    },
+    {
+      "name": "NULL relationship endpoint cannot bypass typed identity enforcement",
+      "status": "passed"
+    }
+  ],
+  "limitations": [
+    "Fictional data and simplified identities",
+    "No full PG17/Supabase migration-chain proof",
+    "No concurrent writer, production RLS, authorization, idempotency or full evidence admission proof",
+    "Current queries assume validated snapshot and scope; absence requires API coverage/unknown response"
+  ]
+}

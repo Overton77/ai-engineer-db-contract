@@ -1,4 +1,4 @@
-import type { Database } from "./database.generated";
+import type { Database } from "./database.generated.js";
 
 export type PublicTableName = keyof Database["public"]["Tables"];
 export type PublicTableRow<Table extends PublicTableName> =
@@ -29,6 +29,8 @@ export type ResearchOrganizationCandidate =
   PublicTableRow<"research_organization_candidate">;
 export type ResearchResourceCandidate =
   PublicTableRow<"research_resource_candidate">;
+export type ResearchStarterChannel =
+  PublicTableRow<"research_starter_channels">;
 export type ResearchStarterVideo =
   PublicTableRow<"research_starter_videos">;
 export type ResearchVideoAnalysis =

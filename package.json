@@ -1,9 +1,10 @@
 {
   "name": "@aiengineer/database-contract",
-  "version": "0.1.0",
+  "version": "0.2.38",
   "private": true,
   "description": "Canonical Supabase migrations and generated TypeScript database contract for AI Engineer systems.",
   "type": "module",
+  "packageManager": "pnpm@10.34.5",
   "types": "./src/index.ts",
   "exports": {
     ".": {
@@ -17,6 +18,10 @@
     "./pre-research": {
       "types": "./src/pre-research.ts",
       "default": "./src/pre-research.ts"
+    },
+    "./provenance": {
+      "types": "./src/provenance.ts",
+      "default": "./src/provenance.ts"
     }
   },
   "files": [
@@ -27,12 +32,16 @@
   ],
   "scripts": {
     "db:start": "supabase start",
-    "db:reset": "supabase db reset",
+    "db:migrate": "supabase migration up --local",
+    "db:reset": "node scripts/reset-disposable-local.mjs",
     "types:generate": "node scripts/generate-types.mjs --local",
     "types:check": "node scripts/generate-types.mjs --local --check",
+    "types:generate:native": "node scripts/generate-types.mjs --local-node",
+    "types:check:native": "node scripts/generate-types.mjs --local-node --check",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@supabase/postgres-meta": "0.95.2",
     "supabase": "2.115.0",
     "typescript": "5.9.3"
   },
@@ -40,3 +49,4 @@
     "node": ">=20"
   }
 }
+

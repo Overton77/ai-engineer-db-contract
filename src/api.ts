@@ -1,4 +1,4 @@
-import type { Database } from "./database.generated";
+import type { Database } from "./database.generated.js";
 
 export type ApiLeaderboardEntry =
   Database["api"]["Functions"]["leaderboard"]["Returns"][number];

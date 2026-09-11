@@ -20,6 +20,9 @@ const schemas = [
   "evaluation",
   "observability",
   "curriculum",
+  "provenance",
+  "content",
+  "knowledge_service",
 ];
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -27,7 +30,18 @@ const repositoryRoot = path.resolve(scriptDirectory, "..");
 const outputPath = path.join(repositoryRoot, "src", "database.generated.ts");
 const temporaryPath = `${outputPath}.tmp`;
 const checkOnly = process.argv.includes("--check");
-const connectionFlag = process.argv.includes("--linked") ? "--linked" : "--local";
+const nativeLocal = process.argv.includes("--local-node");
+const projectIdArgument = process.argv.find((value) => value.startsWith("--project-id="));
+const projectId = projectIdArgument?.slice("--project-id=".length);
+if (nativeLocal && (projectId || process.argv.includes("--linked"))) {
+  throw new Error("Native type generation supports local PostgreSQL only.");
+}
+if (nativeLocal && !process.env.POSTGRES_URL) {
+  throw new Error("Native local type generation requires POSTGRES_URL; no .env file is loaded.");
+}
+const connectionArgs = projectId
+  ? ["--project-id", projectId]
+  : [process.argv.includes("--linked") ? "--linked" : "--local"];
 
 const command = process.execPath;
 const cliEntryPoint = path.join(
@@ -37,14 +51,17 @@ const cliEntryPoint = path.join(
   "dist",
   "supabase.js",
 );
-const args = ["gen", "types", "typescript", connectionFlag];
-args.unshift(cliEntryPoint);
-for (const schema of schemas) args.push("--schema", schema);
+const args = nativeLocal
+  ? [path.join(scriptDirectory, "generate-types-native.mjs"), JSON.stringify(schemas)]
+  : [cliEntryPoint, "gen", "types", "typescript", ...connectionArgs];
+if (!nativeLocal) for (const schema of schemas) args.push("--schema", schema);
+const nativeEnvironmentNames = new Set(["PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "POSTGRES_URL"]);
 
 const result = spawnSync(command, args, {
   cwd: repositoryRoot,
   encoding: "utf8",
   maxBuffer: 128 * 1024 * 1024,
+  ...(nativeLocal ? { timeout: 60_000, env: Object.fromEntries(Object.entries(process.env).filter(([key]) => nativeEnvironmentNames.has(key.toUpperCase()))) } : {}),
 });
 
 if (result.status !== 0) {
