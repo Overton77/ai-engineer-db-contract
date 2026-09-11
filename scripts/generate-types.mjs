@@ -23,6 +23,7 @@ const schemas = [
   "provenance",
   "content",
   "knowledge_service",
+  "temporal",
 ];
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));

@@ -9,6 +9,8 @@ This repository is the canonical contract for the shared AI Engineer Supabase da
 
 Applications consume this repository as a pinned dependency. They do not maintain independent generated copies.
 
+The deployed knowledge model is documented in [Schema summary](docs/knowledge-model/SCHEMA-SUMMARY.md) and [Migration result](docs/knowledge-model/MIGRATION-RESULT.md). Contract 0.3.0 targets the cloud database; the populated local shared database was left unchanged. Use an explicit project ID when regenerating the cloud contract.
+
 ## Schema boundaries
 
 - `public` contains the existing pre-research pipeline (`public.research_*`) and preserved factory tables.

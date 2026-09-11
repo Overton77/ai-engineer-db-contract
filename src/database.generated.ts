@@ -7,118 +7,127 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
   api: {
     Tables: {
       [_ in never]: never
     }
     Views: {
-      agent_skill_profile: {
+      current_facts: {
+        Row: {
+          amount: number | null
+          belief: string | null
+          caused_by_event_id: string | null
+          created_at: string | null
+          currency: string | null
+          extent_id: string | null
+          id: string | null
+          k_from: number | null
+          k_to: number | null
+          payload: Json | null
+          primary_claim_id: string | null
+          ref_entity_id: string | null
+          replaces_segment_id: string | null
+          scope_key: string | null
+          specification_id: string | null
+          status: string | null
+          stream_id: string | null
+          stream_kind: string | null
+          subject_entity_id: string | null
+          subject_relationship_id: string | null
+          temporal_basis: string | null
+          tenant_id: string | null
+          unit: string | null
+          valid_during: unknown
+        }
+        Relationships: []
+      }
+      current_relationships: {
         Row: {
           created_at: string | null
-          description: string | null
-          distribution: string | null
-          format_version: string | null
+          episode: number | null
+          from_entity_id: string | null
           id: string | null
-          latest_release: string | null
-          license_spdx: string | null
-          lifecycle_state: string
-          name: string | null
-          skill_format: string | null
+          k_from: number | null
+          k_to: number | null
+          kind: string | null
+          primary_claim_id: string | null
+          properties: Json | null
+          qualifier: string | null
+          tenant_id: string | null
+          to_entity_id: string | null
+        }
+        Relationships: []
+      }
+      entities: {
+        Row: {
+          aliases: string[] | null
+          created_at: string | null
+          created_by_receipt_id: string | null
+          display_name: string | null
+          id: string | null
+          kind: string | null
+          lifecycle: string | null
+          merged_into_id: string | null
+          projection_knowledge_seq: number | null
           slug: string | null
+          summary: string | null
+          tenant_id: string | null
           updated_at: string | null
         }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          distribution?: string | null
-          format_version?: string | null
-          id?: string | null
-          latest_release?: never
-          license_spdx?: string | null
-          lifecycle_state?: string | null
-          name?: string | null
-          skill_format?: string | null
-          slug?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          distribution?: string | null
-          format_version?: string | null
-          id?: string | null
-          latest_release?: never
-          license_spdx?: string | null
-          lifecycle_state?: string | null
-          name?: string | null
-          skill_format?: string | null
-          slug?: string | null
-          updated_at?: string | null
-        }
         Relationships: []
       }
-      claim_with_evidence: {
+      events_current: {
         Row: {
-          claim_id: string | null
-          claim_type: string | null
-          created_at: string | null
-          evidence: Json | null
-          statement: string | null
-          status: Database["evidence"]["Enums"]["claim_status"] | null
-        }
-        Relationships: []
-      }
-      lesson_freshness: {
-        Row: {
-          backing_records: number | null
-          freshness: string | null
-          lesson_id: string | null
-          slug: string | null
-          stale_records: number | null
-          status: Database["curriculum"]["Enums"]["publish_status"] | null
-          title: string | null
-          version: number | null
+          event_id: string | null
+          kind: string | null
+          object_entity_id: string | null
+          occurred_during: unknown
+          occurrence_id: string | null
+          occurrence_mode: string | null
+          payload: Json | null
+          subject_entity_id: string | null
+          tenant_id: string | null
         }
         Relationships: []
       }
       library_profile: {
         Row: {
           created_at: string | null
-          current_license: string | null
-          description: string | null
+          created_by_receipt_id: string | null
           display_name: string | null
           ecosystem: string | null
-          first_released_on: string | null
-          homepage_url: string | null
           id: string | null
-          lifecycle_state: string
-          maintenance_status: string | null
+          kind: string | null
+          lifecycle: string | null
+          merged_into_id: string | null
           package_name: string | null
-          primary_language: string | null
-          taxonomy_terms: Json | null
+          projection_knowledge_seq: number | null
+          slug: string | null
+          summary: string | null
+          tenant_id: string | null
           updated_at: string | null
         }
-        Relationships: []
-      }
-      mcp_server_profile: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          distribution_kind: string | null
-          ecosystem: string | null
-          id: string | null
-          latest_release: string | null
-          license_spdx: string | null
-          lifecycle_state: string
-          name: string | null
-          package_name: string | null
-          registry_id: string | null
-          registry_status: string | null
-          transport_kinds: string[] | null
-          updated_at: string | null
-          version_count: number | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "entity_merged_into_id_fkey"
+            columns: ["merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "library_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_tenant_id_merged_into_id_fkey"
+            columns: ["tenant_id", "merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "library_profile"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
       }
       mission_progress: {
         Row: {
@@ -137,91 +146,232 @@ export type Database = {
         }
         Relationships: []
       }
-      model_profile: {
-        Row: {
-          availability: string | null
-          context_window_tokens: number | null
-          created_at: string | null
-          display_name: string | null
-          family: string | null
-          id: string | null
-          latest_released_on: string | null
-          latest_version: string | null
-          modality: string[] | null
-          model_kind: string | null
-          model_slug: string | null
-          openness: string | null
-          provider: string | null
-        }
-        Relationships: []
-      }
       review_queue: {
         Row: {
           assignee: string | null
+          candidate_id: string | null
+          capability_version_id: string | null
+          claim_conflict_id: string | null
+          claim_id: string | null
           created_at: string | null
+          detail: Json | null
+          entity_merge_id: string | null
+          id: string | null
+          operation_intent_id: string | null
           priority: number | null
           quorum_required: number | null
-          review_task_id: string | null
+          ranking_result_id: string | null
+          record_reconciliation_id: string | null
+          report_version_id: string | null
           state: Database["evaluation"]["Enums"]["review_state"] | null
           subject_kind: string | null
           summary: string | null
           task_kind: string | null
+          tenant_id: string | null
           updated_at: string | null
+          vector_space_version_id: string | null
         }
         Insert: {
           assignee?: string | null
+          candidate_id?: string | null
+          capability_version_id?: string | null
+          claim_conflict_id?: string | null
+          claim_id?: string | null
           created_at?: string | null
+          detail?: Json | null
+          entity_merge_id?: string | null
+          id?: string | null
+          operation_intent_id?: string | null
           priority?: number | null
           quorum_required?: number | null
-          review_task_id?: string | null
+          ranking_result_id?: string | null
+          record_reconciliation_id?: string | null
+          report_version_id?: string | null
           state?: Database["evaluation"]["Enums"]["review_state"] | null
           subject_kind?: string | null
           summary?: string | null
           task_kind?: string | null
+          tenant_id?: string | null
           updated_at?: string | null
+          vector_space_version_id?: string | null
         }
         Update: {
           assignee?: string | null
+          candidate_id?: string | null
+          capability_version_id?: string | null
+          claim_conflict_id?: string | null
+          claim_id?: string | null
           created_at?: string | null
+          detail?: Json | null
+          entity_merge_id?: string | null
+          id?: string | null
+          operation_intent_id?: string | null
           priority?: number | null
           quorum_required?: number | null
-          review_task_id?: string | null
+          ranking_result_id?: string | null
+          record_reconciliation_id?: string | null
+          report_version_id?: string | null
           state?: Database["evaluation"]["Enums"]["review_state"] | null
           subject_kind?: string | null
           summary?: string | null
           task_kind?: string | null
+          tenant_id?: string | null
           updated_at?: string | null
+          vector_space_version_id?: string | null
         }
         Relationships: []
       }
       technical_record_search: {
         Row: {
           assurance_level: string | null
-          confidence: number | null
+          created_at: string | null
+          created_by_receipt_id: string | null
           id: string | null
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          record_kind: string | null
-          revalidation_state:
-            Database["knowledge"]["Enums"]["revalidation_state"] | null
+          kind: string | null
+          provenance_claim_id: string | null
           scope: Json | null
           statement: string | null
+          tenant_id: string | null
           title: string | null
-          updated_at: string | null
+        }
+        Insert: {
+          assurance_level?: string | null
+          created_at?: string | null
+          created_by_receipt_id?: string | null
+          id?: string | null
+          kind?: string | null
+          provenance_claim_id?: string | null
+          scope?: Json | null
+          statement?: string | null
+          tenant_id?: string | null
+          title?: string | null
+        }
+        Update: {
+          assurance_level?: string | null
+          created_at?: string | null
+          created_by_receipt_id?: string | null
+          id?: string | null
+          kind?: string | null
+          provenance_claim_id?: string | null
+          scope?: Json | null
+          statement?: string | null
+          tenant_id?: string | null
+          title?: string | null
         }
         Relationships: []
       }
     }
     Functions: {
-      evidence_packet: { Args: { p_packet_id: string }; Returns: Json }
+      current_event_rows: {
+        Args: never
+        Returns: {
+          event_id: string
+          kind: string
+          object_entity_id: string
+          occurred_during: unknown
+          occurrence_id: string
+          occurrence_mode: string
+          payload: Json
+          subject_entity_id: string
+          tenant_id: string
+        }[]
+      }
+      current_fact_rows: {
+        Args: never
+        Returns: {
+          amount: number
+          belief: string
+          caused_by_event_id: string
+          created_at: string
+          currency: string
+          extent_id: string
+          id: string
+          k_from: number
+          k_to: number
+          payload: Json
+          primary_claim_id: string
+          ref_entity_id: string
+          replaces_segment_id: string
+          scope_key: string
+          specification_id: string
+          status: string
+          stream_id: string
+          stream_kind: string
+          subject_entity_id: string
+          subject_relationship_id: string
+          temporal_basis: string
+          tenant_id: string
+          unit: string
+          valid_during: unknown
+        }[]
+      }
+      current_relationship_rows: {
+        Args: never
+        Returns: Database["corpus"]["Tables"]["relationship"]["Row"][]
+        SetofOptions: {
+          from: "*"
+          to: "relationship"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      entity_aliases: { Args: { p_entity: string }; Returns: string[] }
+      entity_at: {
+        Args: { p_at?: string; p_entity: string; p_k?: number }
+        Returns: {
+          amount: number
+          belief: string
+          currency: string
+          k_from: number
+          k_to: number
+          payload: Json
+          ref_display_name: string
+          ref_entity_id: string
+          scope_key: string
+          segment_id: string
+          status: string
+          stream_kind: string
+          unit: string
+          valid_during: unknown
+        }[]
+      }
+      entity_card: { Args: { p_entity: string }; Returns: Json }
+      entity_rows: {
+        Args: never
+        Returns: Database["corpus"]["Tables"]["entity"]["Row"][]
+        SetofOptions: {
+          from: "*"
+          to: "entity"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      entity_timeline: {
+        Args: { p_entity: string; p_from: string; p_k?: number; p_to: string }
+        Returns: {
+          details: Json
+          item_id: string
+          item_kind: string
+          world_interval: unknown
+        }[]
+      }
+      evidence_packet: { Args: { p_packet: string }; Returns: Json }
       hybrid_knowledge_search_1536: {
         Args: {
+          p_as_of?: string
           p_candidate_limit?: number
+          p_content_kinds?: string[]
+          p_document_types?: string[]
+          p_entity_ids?: string[]
           p_filters?: Json
+          p_knowledge_seq?: number
+          p_min_assurance?: number
+          p_publication_id?: string
           p_query_embedding: unknown
           p_query_text: string
           p_result_limit?: number
           p_rrf_k?: number
+          p_spaces?: string[]
           p_vector_space_version_id: string
         }
         Returns: {
@@ -234,12 +384,37 @@ export type Database = {
         }[]
       }
       leaderboard: {
-        Args: { p_slug: string }
+        Args: { p_limit?: number }
+        Returns: Database["ranking"]["Tables"]["ranking_result"]["Row"][]
+        SetofOptions: {
+          from: "*"
+          to: "ranking_result"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      relationships: {
+        Args: {
+          p_at?: string
+          p_direction?: string
+          p_entity: string
+          p_k?: number
+          p_kind?: string
+        }
+        Returns: Database["corpus"]["Tables"]["relationship"]["Row"][]
+        SetofOptions: {
+          from: "*"
+          to: "relationship"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      resolve_entity: {
+        Args: { p_text: string }
         Returns: {
+          display_name: string
           entity_id: string
-          entity_kind: string
-          explanation: string
-          rank: number
+          kind: string
           score: number
         }[]
       }
@@ -266,6 +441,26 @@ export type Database = {
           p_preconditions?: Json
         }
         Returns: string
+      }
+      summary_evidence: {
+        Args: { p_summary: string }
+        Returns: {
+          chunk_id: string
+          end_ms: number
+          locator_id: string
+          node_id: string
+          start_ms: number
+        }[]
+      }
+      what_changed: {
+        Args: { p_entity: string; p_k1: number; p_k2: number }
+        Returns: {
+          change_kind: string
+          details: Json
+          item_id: string
+          item_kind: string
+          knowledge_seq: number
+        }[]
       }
     }
     Enums: {
@@ -399,38 +594,93 @@ export type Database = {
           canonical_title: string
           created_at: string
           created_by_attempt_id: string | null
-          document_kind: string
+          document_type_code: string
           id: string
           lifecycle: string
+          repository_file_id: string | null
           supersedes_id: string | null
           tenant_id: string
+          work_entity_id: string | null
         }
         Insert: {
           canonical_source_id?: string | null
           canonical_title: string
           created_at?: string
           created_by_attempt_id?: string | null
-          document_kind: string
+          document_type_code: string
           id?: string
           lifecycle?: string
+          repository_file_id?: string | null
           supersedes_id?: string | null
           tenant_id?: string
+          work_entity_id?: string | null
         }
         Update: {
           canonical_source_id?: string | null
           canonical_title?: string
           created_at?: string
           created_by_attempt_id?: string | null
-          document_kind?: string
+          document_type_code?: string
           id?: string
           lifecycle?: string
+          repository_file_id?: string | null
           supersedes_id?: string | null
+          tenant_id?: string
+          work_entity_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_document_type_code_fkey"
+            columns: ["document_type_code"]
+            isOneToOne: false
+            referencedRelation: "document_type"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "document_tenant_id_supersedes_id_fkey"
+            columns: ["tenant_id", "supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      document_about_entity: {
+        Row: {
+          confidence: number | null
+          document_id: string
+          entity_id: string
+          method: string
+          role: string
+          tenant_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          document_id: string
+          entity_id: string
+          method: string
+          role: string
+          tenant_id?: string
+        }
+        Update: {
+          confidence?: number | null
+          document_id?: string
+          entity_id?: string
+          method?: string
+          role?: string
           tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "document_tenant_id_supersedes_id_fkey"
-            columns: ["tenant_id", "supersedes_id"]
+            foreignKeyName: "document_about_entity_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_about_entity_tenant_id_document_id_fkey"
+            columns: ["tenant_id", "document_id"]
             isOneToOne: false
             referencedRelation: "document"
             referencedColumns: ["tenant_id", "id"]
@@ -486,6 +736,7 @@ export type Database = {
           artifact_id: string | null
           bbox: Json | null
           created_at: string
+          end_ms: number | null
           end_offset: number | null
           id: string
           inline_text: string | null
@@ -498,7 +749,9 @@ export type Database = {
           representation_id: string
           role: string | null
           selector: Json
+          speaker_entity_id: string | null
           stable_local_key: string
+          start_ms: number | null
           start_offset: number | null
           tenant_id: string
         }
@@ -506,6 +759,7 @@ export type Database = {
           artifact_id?: string | null
           bbox?: Json | null
           created_at?: string
+          end_ms?: number | null
           end_offset?: number | null
           id?: string
           inline_text?: string | null
@@ -518,7 +772,9 @@ export type Database = {
           representation_id: string
           role?: string | null
           selector?: Json
+          speaker_entity_id?: string | null
           stable_local_key: string
+          start_ms?: number | null
           start_offset?: number | null
           tenant_id?: string
         }
@@ -526,6 +782,7 @@ export type Database = {
           artifact_id?: string | null
           bbox?: Json | null
           created_at?: string
+          end_ms?: number | null
           end_offset?: number | null
           id?: string
           inline_text?: string | null
@@ -538,7 +795,9 @@ export type Database = {
           representation_id?: string
           role?: string | null
           selector?: Json
+          speaker_entity_id?: string | null
           stable_local_key?: string
+          start_ms?: number | null
           start_offset?: number | null
           tenant_id?: string
         }
@@ -673,6 +932,246 @@ export type Database = {
             referencedColumns: ["tenant_id", "id"]
           },
         ]
+      }
+      document_summary: {
+        Row: {
+          audience: string
+          content_sha256: string
+          coverage_ratio: number | null
+          created_at: string
+          derived_from_representation_id: string
+          document_version_id: string
+          focus_entity_id: string | null
+          id: string
+          language: string | null
+          lifecycle: string
+          representation_id: string
+          scope: string
+          scope_node_id: string | null
+          summary_kind: string
+          supersedes_id: string | null
+          tenant_id: string
+          text: string
+          token_count: number
+          transformation_run_id: string
+        }
+        Insert: {
+          audience?: string
+          content_sha256: string
+          coverage_ratio?: number | null
+          created_at?: string
+          derived_from_representation_id: string
+          document_version_id: string
+          focus_entity_id?: string | null
+          id?: string
+          language?: string | null
+          lifecycle?: string
+          representation_id: string
+          scope: string
+          scope_node_id?: string | null
+          summary_kind: string
+          supersedes_id?: string | null
+          tenant_id?: string
+          text: string
+          token_count: number
+          transformation_run_id: string
+        }
+        Update: {
+          audience?: string
+          content_sha256?: string
+          coverage_ratio?: number | null
+          created_at?: string
+          derived_from_representation_id?: string
+          document_version_id?: string
+          focus_entity_id?: string | null
+          id?: string
+          language?: string | null
+          lifecycle?: string
+          representation_id?: string
+          scope?: string
+          scope_node_id?: string | null
+          summary_kind?: string
+          supersedes_id?: string | null
+          tenant_id?: string
+          text?: string
+          token_count?: number
+          transformation_run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_summary_derived_from_representation_id_fkey"
+            columns: ["derived_from_representation_id"]
+            isOneToOne: false
+            referencedRelation: "document_representation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_document_version_id_fkey"
+            columns: ["document_version_id"]
+            isOneToOne: false
+            referencedRelation: "document_version"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_representation_id_fkey"
+            columns: ["representation_id"]
+            isOneToOne: false
+            referencedRelation: "document_representation"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_scope_node_id_fkey"
+            columns: ["scope_node_id"]
+            isOneToOne: false
+            referencedRelation: "document_node"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_derived_from_representation_id_fkey"
+            columns: ["tenant_id", "derived_from_representation_id"]
+            isOneToOne: false
+            referencedRelation: "document_representation"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_document_version_id_fkey"
+            columns: ["tenant_id", "document_version_id"]
+            isOneToOne: false
+            referencedRelation: "document_version"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_representation_id_fkey"
+            columns: ["tenant_id", "representation_id"]
+            isOneToOne: false
+            referencedRelation: "document_representation"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_scope_node_id_fkey"
+            columns: ["tenant_id", "scope_node_id"]
+            isOneToOne: false
+            referencedRelation: "document_node"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_supersedes_id_fkey"
+            columns: ["tenant_id", "supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document_summary"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_tenant_id_transformation_run_id_fkey"
+            columns: ["tenant_id", "transformation_run_id"]
+            isOneToOne: false
+            referencedRelation: "transformation_run"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_transformation_run_id_fkey"
+            columns: ["transformation_run_id"]
+            isOneToOne: false
+            referencedRelation: "transformation_run"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_summary_source: {
+        Row: {
+          node_id: string
+          summary_id: string
+          tenant_id: string
+          weight: number
+        }
+        Insert: {
+          node_id: string
+          summary_id: string
+          tenant_id?: string
+          weight?: number
+        }
+        Update: {
+          node_id?: string
+          summary_id?: string
+          tenant_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_summary_source_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "document_node"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_source_summary_id_fkey"
+            columns: ["summary_id"]
+            isOneToOne: false
+            referencedRelation: "document_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_summary_source_tenant_id_node_id_fkey"
+            columns: ["tenant_id", "node_id"]
+            isOneToOne: false
+            referencedRelation: "document_node"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "document_summary_source_tenant_id_summary_id_fkey"
+            columns: ["tenant_id", "summary_id"]
+            isOneToOne: false
+            referencedRelation: "document_summary"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      document_type: {
+        Row: {
+          code: string
+          default_chunking_slug: string
+          default_extraction_kinds: string[]
+          default_spaces: string[]
+          default_summary_kinds: string[]
+          description: string
+          family: string
+          is_primary_source: boolean
+          published_at_is_world_time: boolean
+          work_entity_kind: string | null
+        }
+        Insert: {
+          code: string
+          default_chunking_slug: string
+          default_extraction_kinds: string[]
+          default_spaces: string[]
+          default_summary_kinds?: string[]
+          description: string
+          family: string
+          is_primary_source: boolean
+          published_at_is_world_time?: boolean
+          work_entity_kind?: string | null
+        }
+        Update: {
+          code?: string
+          default_chunking_slug?: string
+          default_extraction_kinds?: string[]
+          default_spaces?: string[]
+          default_summary_kinds?: string[]
+          description?: string
+          family?: string
+          is_primary_source?: boolean
+          published_at_is_world_time?: boolean
+          work_entity_kind?: string | null
+        }
+        Relationships: []
       }
       document_version: {
         Row: {
@@ -883,6 +1382,21 @@ export type Database = {
           },
         ]
       }
+      transformation_kind: {
+        Row: {
+          code: string
+          description: string
+        }
+        Insert: {
+          code: string
+          description: string
+        }
+        Update: {
+          code?: string
+          description?: string
+        }
+        Relationships: []
+      }
       transformation_output: {
         Row: {
           artifact_id: string | null
@@ -934,6 +1448,8 @@ export type Database = {
           capability_version_id: string | null
           code_ref: string | null
           contract_version: string
+          converter_identity: string | null
+          converter_version: string | null
           cost_usd: number | null
           created_at: string
           ended_at: string | null
@@ -961,6 +1477,8 @@ export type Database = {
           capability_version_id?: string | null
           code_ref?: string | null
           contract_version: string
+          converter_identity?: string | null
+          converter_version?: string | null
           cost_usd?: number | null
           created_at?: string
           ended_at?: string | null
@@ -988,6 +1506,8 @@ export type Database = {
           capability_version_id?: string | null
           code_ref?: string | null
           contract_version?: string
+          converter_identity?: string | null
+          converter_version?: string | null
           cost_usd?: number | null
           created_at?: string
           ended_at?: string | null
@@ -1010,7 +1530,15 @@ export type Database = {
           tenant_id?: string
           transformation_kind?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transformation_run_transformation_kind_fkey"
+            columns: ["transformation_kind"]
+            isOneToOne: false
+            referencedRelation: "transformation_kind"
+            referencedColumns: ["code"]
+          },
+        ]
       }
     }
     Views: {
@@ -1030,497 +1558,122 @@ export type Database = {
     Tables: {
       agent_skill: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
           description: string | null
-          distribution: string | null
-          format_version: string | null
           id: string
-          license_spdx: string | null
-          lifecycle_state: string
-          maintainer_organization_id: string | null
-          merged_into_id: string | null
-          name: string
-          repository_id: string | null
+          kind: string
           skill_format: string | null
-          slug: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
           description?: string | null
-          distribution?: string | null
-          format_version?: string | null
-          id?: string
-          license_spdx?: string | null
-          lifecycle_state: string
-          maintainer_organization_id?: string | null
-          merged_into_id?: string | null
-          name: string
-          repository_id?: string | null
+          id: string
+          kind?: string
           skill_format?: string | null
-          slug?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
           description?: string | null
-          distribution?: string | null
-          format_version?: string | null
           id?: string
-          license_spdx?: string | null
-          lifecycle_state?: string
-          maintainer_organization_id?: string | null
-          merged_into_id?: string | null
-          name?: string
-          repository_id?: string | null
+          kind?: string
           skill_format?: string | null
-          slug?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "agent_skill_maintainer_organization_id_fkey"
-            columns: ["maintainer_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
+            foreignKeyName: "agent_skill_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "agent_skill_merged_into_id_fkey"
-            columns: ["merged_into_id"]
+            foreignKeyName: "agent_skill_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "agent_skill"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "agent_skill_repository_id_fkey"
-            columns: ["repository_id"]
+            foreignKeyName: "agent_skill_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      agent_skill_requires_mcp_server: {
-        Row: {
-          agent_skill_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          min_server_version: string | null
-          optionality: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          agent_skill_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          min_server_version?: string | null
-          optionality?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          agent_skill_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          min_server_version?: string | null
-          optionality?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "agent_skill_requires_mcp_server_agent_skill_id_fkey"
-            columns: ["agent_skill_id"]
-            isOneToOne: false
-            referencedRelation: "agent_skill"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "agent_skill_requires_mcp_server_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      agent_skill_targets_library: {
-        Row: {
-          agent_skill_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          relationship: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          agent_skill_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          relationship?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          agent_skill_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          relationship?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "agent_skill_targets_library_agent_skill_id_fkey"
-            columns: ["agent_skill_id"]
-            isOneToOne: false
-            referencedRelation: "agent_skill"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "agent_skill_targets_library_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      agent_skill_version: {
-        Row: {
-          agent_skill_id: string
-          bundled_tooling: Json | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          manifest: Json | null
-          released_on: string | null
-          version_label: string
-        }
-        Insert: {
-          agent_skill_id: string
-          bundled_tooling?: Json | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          manifest?: Json | null
-          released_on?: string | null
-          version_label: string
-        }
-        Update: {
-          agent_skill_id?: string
-          bundled_tooling?: Json | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          manifest?: Json | null
-          released_on?: string | null
-          version_label?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "agent_skill_version_agent_skill_id_fkey"
-            columns: ["agent_skill_id"]
-            isOneToOne: false
-            referencedRelation: "agent_skill"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       ai_model: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          display_name: string
-          family: string | null
+          description: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          modality: string[]
-          model_kind: string | null
-          model_slug: string
-          openness: string | null
-          provider_organization_id: string
+          kind: string
+          modality: string[] | null
+          model_family: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          display_name: string
-          family?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          modality?: string[]
-          model_kind?: string | null
-          model_slug: string
-          openness?: string | null
-          provider_organization_id: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          display_name?: string
-          family?: string | null
-          id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          modality?: string[]
-          model_kind?: string | null
-          model_slug?: string
-          openness?: string | null
-          provider_organization_id?: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_model_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ai_model_provider_organization_id_fkey"
-            columns: ["provider_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ai_model_availability_fact: {
-        Row: {
-          ai_model_version_id: string
-          availability: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
+          description?: string | null
           id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
-        }
-        Insert: {
-          ai_model_version_id: string
-          availability: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          kind?: string
+          modality?: string[] | null
+          model_family?: string | null
+          tenant_id?: string
         }
         Update: {
-          ai_model_version_id?: string
-          availability?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
+          description?: string | null
           id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          kind?: string
+          modality?: string[] | null
+          model_family?: string | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ai_model_availability_fact_ai_model_version_id_fkey"
-            columns: ["ai_model_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ai_model_relationship: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          from_ai_model_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          to_ai_model_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_ai_model_id: string
-          provenance_claim_id?: string | null
-          relationship_kind: string
-          to_ai_model_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_ai_model_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          to_ai_model_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_model_relationship_from_ai_model_id_fkey"
-            columns: ["from_ai_model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model"
+            foreignKeyName: "ai_model_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ai_model_relationship_to_ai_model_id_fkey"
-            columns: ["to_ai_model_id"]
+            foreignKeyName: "ai_model_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "ai_model"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ai_model_released_by_organization: {
-        Row: {
-          ai_model_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          organization_id: string
-          provenance_claim_id: string | null
-          release_role: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          ai_model_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          organization_id: string
-          provenance_claim_id?: string | null
-          release_role: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          ai_model_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          organization_id?: string
-          provenance_claim_id?: string | null
-          release_role?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_model_released_by_organization_ai_model_id_fkey"
-            columns: ["ai_model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "ai_model_released_by_organization_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: "ai_model_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       ai_model_version: {
         Row: {
           ai_model_id: string
-          context_window_tokens: number | null
-          created_at: string
-          created_by_receipt_id: string
-          deprecation_state: string | null
           id: string
-          knowledge_cutoff_on: string | null
-          max_output_tokens: number | null
-          released_on: string | null
+          kind: string
+          provider_model_id: string | null
+          tenant_id: string
           version_label: string
         }
         Insert: {
           ai_model_id: string
-          context_window_tokens?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          deprecation_state?: string | null
-          id?: string
-          knowledge_cutoff_on?: string | null
-          max_output_tokens?: number | null
-          released_on?: string | null
+          id: string
+          kind?: string
+          provider_model_id?: string | null
+          tenant_id?: string
           version_label: string
         }
         Update: {
           ai_model_id?: string
-          context_window_tokens?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          deprecation_state?: string | null
           id?: string
-          knowledge_cutoff_on?: string | null
-          max_output_tokens?: number | null
-          released_on?: string | null
+          kind?: string
+          provider_model_id?: string | null
+          tenant_id?: string
           version_label?: string
         }
         Relationships: [
@@ -1531,155 +1684,216 @@ export type Database = {
             referencedRelation: "ai_model"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ai_model_version_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_model_version_tenant_id_ai_model_id_fkey"
+            columns: ["tenant_id", "ai_model_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_model_version_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_model_version_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      ai_model_version_spec: {
+        Row: {
+          context_tokens: number | null
+          id: string
+          modalities: string[] | null
+          model_version_id: string
+          parameters_billions: number | null
+          source_claim_id: string | null
+          specification: Json
+          tenant_id: string
+        }
+        Insert: {
+          context_tokens?: number | null
+          id?: string
+          modalities?: string[] | null
+          model_version_id: string
+          parameters_billions?: number | null
+          source_claim_id?: string | null
+          specification?: Json
+          tenant_id?: string
+        }
+        Update: {
+          context_tokens?: number | null
+          id?: string
+          modalities?: string[] | null
+          model_version_id?: string
+          parameters_billions?: number | null
+          source_claim_id?: string | null
+          specification?: Json
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_model_version_spec_model_version_id_fkey"
+            columns: ["model_version_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model_version"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_model_version_spec_tenant_id_model_version_id_fkey"
+            columns: ["tenant_id", "model_version_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model_version"
+            referencedColumns: ["tenant_id", "id"]
+          },
         ]
       }
       ai_protocol: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          governing_organization_id: string | null
+          description: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          name: string
-          purpose: string | null
-          slug: string
-          spec_repository_id: string | null
-          status: string | null
+          kind: string
+          specification_url: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          governing_organization_id?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          name: string
-          purpose?: string | null
-          slug: string
-          spec_repository_id?: string | null
-          status?: string | null
+          description?: string | null
+          id: string
+          kind?: string
+          specification_url?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          governing_organization_id?: string | null
+          description?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          name?: string
-          purpose?: string | null
-          slug?: string
-          spec_repository_id?: string | null
-          status?: string | null
+          kind?: string
+          specification_url?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "ai_protocol_governing_organization_id_fkey"
-            columns: ["governing_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
+            foreignKeyName: "ai_protocol_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ai_protocol_merged_into_id_fkey"
-            columns: ["merged_into_id"]
+            foreignKeyName: "ai_protocol_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "ai_protocol"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "ai_protocol_spec_repository_id_fkey"
-            columns: ["spec_repository_id"]
+            foreignKeyName: "ai_protocol_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      ai_protocol_relationship: {
+      ai_protocol_feature: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          from_ai_protocol_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          to_ai_protocol_id: string
+          ai_protocol_id: string
+          description: string | null
+          feature_key: string
+          id: string
+          kind: string
+          tenant_id: string
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_ai_protocol_id: string
-          provenance_claim_id?: string | null
-          relationship_kind: string
-          to_ai_protocol_id: string
+          ai_protocol_id: string
+          description?: string | null
+          feature_key: string
+          id: string
+          kind?: string
+          tenant_id?: string
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_ai_protocol_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          to_ai_protocol_id?: string
+          ai_protocol_id?: string
+          description?: string | null
+          feature_key?: string
+          id?: string
+          kind?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ai_protocol_relationship_from_ai_protocol_id_fkey"
-            columns: ["from_ai_protocol_id"]
+            foreignKeyName: "ai_protocol_feature_ai_protocol_id_fkey"
+            columns: ["ai_protocol_id"]
             isOneToOne: false
             referencedRelation: "ai_protocol"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ai_protocol_relationship_to_ai_protocol_id_fkey"
-            columns: ["to_ai_protocol_id"]
+            foreignKeyName: "ai_protocol_feature_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_feature_tenant_id_ai_protocol_id_fkey"
+            columns: ["tenant_id", "ai_protocol_id"]
             isOneToOne: false
             referencedRelation: "ai_protocol"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_feature_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_feature_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       ai_protocol_version: {
         Row: {
           ai_protocol_id: string
-          breaking_changes: boolean
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          released_on: string | null
-          spec_url: string | null
-          summary: string | null
+          kind: string
+          specification_url: string | null
+          tenant_id: string
           version_label: string
         }
         Insert: {
           ai_protocol_id: string
-          breaking_changes?: boolean
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          released_on?: string | null
-          spec_url?: string | null
-          summary?: string | null
+          id: string
+          kind?: string
+          specification_url?: string | null
+          tenant_id?: string
           version_label: string
         }
         Update: {
           ai_protocol_id?: string
-          breaking_changes?: boolean
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          released_on?: string | null
-          spec_url?: string | null
-          summary?: string | null
+          kind?: string
+          specification_url?: string | null
+          tenant_id?: string
           version_label?: string
         }
         Relationships: [
@@ -1690,503 +1904,485 @@ export type Database = {
             referencedRelation: "ai_protocol"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ai_protocol_version_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_version_tenant_id_ai_protocol_id_fkey"
+            columns: ["tenant_id", "ai_protocol_id"]
+            isOneToOne: false
+            referencedRelation: "ai_protocol"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_version_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "ai_protocol_version_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
         ]
       }
       benchmark: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          homepage_url: string | null
+          canonical_url: string | null
           id: string
-          lifecycle_state: string
-          measures: string | null
-          merged_into_id: string | null
-          name: string
-          retired: boolean
-          slug: string
-          task_domain: string | null
+          kind: string
+          methodology: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          homepage_url?: string | null
-          id?: string
-          lifecycle_state: string
-          measures?: string | null
-          merged_into_id?: string | null
-          name: string
-          retired?: boolean
-          slug: string
-          task_domain?: string | null
+          canonical_url?: string | null
+          id: string
+          kind?: string
+          methodology?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          homepage_url?: string | null
+          canonical_url?: string | null
           id?: string
-          lifecycle_state?: string
-          measures?: string | null
-          merged_into_id?: string | null
-          name?: string
-          retired?: boolean
-          slug?: string
-          task_domain?: string | null
+          kind?: string
+          methodology?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "benchmark_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "benchmark"
+            foreignKeyName: "benchmark_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "benchmark_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "benchmark_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      benchmark_evaluates_model_version: {
+      benchmark_run: {
         Row: {
-          ai_model_version_id: string
+          artifact_id: string | null
           benchmark_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          evaluation_role: string
-          provenance_claim_id: string | null
+          id: string
+          kind: string
+          protocol: Json
+          subject_entity_id: string
+          tenant_id: string
         }
         Insert: {
-          ai_model_version_id: string
+          artifact_id?: string | null
           benchmark_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          evaluation_role?: string
-          provenance_claim_id?: string | null
+          id: string
+          kind?: string
+          protocol?: Json
+          subject_entity_id: string
+          tenant_id?: string
         }
         Update: {
-          ai_model_version_id?: string
+          artifact_id?: string | null
           benchmark_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          evaluation_role?: string
-          provenance_claim_id?: string | null
+          id?: string
+          kind?: string
+          protocol?: Json
+          subject_entity_id?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "benchmark_evaluates_model_version_ai_model_version_id_fkey"
-            columns: ["ai_model_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model_version"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "benchmark_evaluates_model_version_benchmark_id_fkey"
-            columns: ["benchmark_id"]
-            isOneToOne: false
-            referencedRelation: "benchmark"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      benchmark_uses_dataset: {
-        Row: {
-          benchmark_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          dataset_id: string
-          provenance_claim_id: string | null
-          usage_kind: string
-        }
-        Insert: {
-          benchmark_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          dataset_id: string
-          provenance_claim_id?: string | null
-          usage_kind?: string
-        }
-        Update: {
-          benchmark_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          dataset_id?: string
-          provenance_claim_id?: string | null
-          usage_kind?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "benchmark_uses_dataset_benchmark_id_fkey"
+            foreignKeyName: "benchmark_run_benchmark_id_fkey"
             columns: ["benchmark_id"]
             isOneToOne: false
             referencedRelation: "benchmark"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "benchmark_uses_dataset_dataset_id_fkey"
-            columns: ["dataset_id"]
-            isOneToOne: false
-            referencedRelation: "dataset"
+            foreignKeyName: "benchmark_run_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "benchmark_run_subject_entity_id_fkey"
+            columns: ["subject_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "benchmark_run_tenant_id_benchmark_id_fkey"
+            columns: ["tenant_id", "benchmark_id"]
+            isOneToOne: false
+            referencedRelation: "benchmark"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "benchmark_run_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "benchmark_run_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "benchmark_run_tenant_id_subject_entity_id_fkey"
+            columns: ["tenant_id", "subject_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       case_study: {
         Row: {
-          case_study_kind: string
-          created_at: string
-          created_by_receipt_id: string
+          abstract: string | null
+          canonical_url: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          published_on: string | null
-          slug: string
-          source_url: string | null
-          structured_outcomes: Json
-          subject_organization_id: string | null
-          subject_product_id: string | null
-          summary: string | null
+          kind: string
           tenant_id: string
           title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          case_study_kind?: string
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          published_on?: string | null
-          slug: string
-          source_url?: string | null
-          structured_outcomes?: Json
-          subject_organization_id?: string | null
-          subject_product_id?: string | null
-          summary?: string | null
+          abstract?: string | null
+          canonical_url?: string | null
+          id: string
+          kind?: string
           tenant_id?: string
           title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          case_study_kind?: string
-          created_at?: string
-          created_by_receipt_id?: string
+          abstract?: string | null
+          canonical_url?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          published_on?: string | null
-          slug?: string
-          source_url?: string | null
-          structured_outcomes?: Json
-          subject_organization_id?: string | null
-          subject_product_id?: string | null
-          summary?: string | null
+          kind?: string
           tenant_id?: string
           title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "case_study_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "case_study"
+            foreignKeyName: "case_study_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "case_study_subject_organization_id_fkey"
-            columns: ["subject_organization_id"]
+            foreignKeyName: "case_study_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "case_study_subject_product_id_fkey"
-            columns: ["subject_product_id"]
+            foreignKeyName: "case_study_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      case_study_references_benchmark: {
+      compute_device: {
         Row: {
-          benchmark_id: string
-          case_study_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          provenance_claim_id: string | null
-          relationship_kind: string
+          architecture: string | null
+          device_kind: string | null
+          id: string
+          kind: string
+          manufacturer_entity_id: string | null
+          memory_gb: number | null
+          tenant_id: string
         }
         Insert: {
-          benchmark_id: string
-          case_study_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          provenance_claim_id?: string | null
-          relationship_kind?: string
+          architecture?: string | null
+          device_kind?: string | null
+          id: string
+          kind?: string
+          manufacturer_entity_id?: string | null
+          memory_gb?: number | null
+          tenant_id?: string
         }
         Update: {
-          benchmark_id?: string
-          case_study_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          provenance_claim_id?: string | null
-          relationship_kind?: string
+          architecture?: string | null
+          device_kind?: string | null
+          id?: string
+          kind?: string
+          manufacturer_entity_id?: string | null
+          memory_gb?: number | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "case_study_references_benchmark_benchmark_id_fkey"
-            columns: ["benchmark_id"]
-            isOneToOne: false
-            referencedRelation: "benchmark"
+            foreignKeyName: "compute_device_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "case_study_references_benchmark_case_study_id_fkey"
-            columns: ["case_study_id"]
+            foreignKeyName: "compute_device_manufacturer_entity_id_fkey"
+            columns: ["manufacturer_entity_id"]
             isOneToOne: false
-            referencedRelation: "case_study"
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compute_device_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "compute_device_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "compute_device_tenant_id_manufacturer_entity_id_fkey"
+            columns: ["tenant_id", "manufacturer_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
-      case_study_uses_library: {
+      compute_offering: {
         Row: {
-          case_study_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          library_id: string
-          provenance_claim_id: string | null
-          usage_kind: string
+          id: string
+          kind: string
+          offering_key: string | null
+          provider_entity_id: string | null
+          region: string | null
+          tenant_id: string
         }
         Insert: {
-          case_study_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          library_id: string
-          provenance_claim_id?: string | null
-          usage_kind?: string
+          id: string
+          kind?: string
+          offering_key?: string | null
+          provider_entity_id?: string | null
+          region?: string | null
+          tenant_id?: string
         }
         Update: {
-          case_study_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          library_id?: string
-          provenance_claim_id?: string | null
-          usage_kind?: string
+          id?: string
+          kind?: string
+          offering_key?: string | null
+          provider_entity_id?: string | null
+          region?: string | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "case_study_uses_library_case_study_id_fkey"
-            columns: ["case_study_id"]
-            isOneToOne: false
-            referencedRelation: "case_study"
+            foreignKeyName: "compute_offering_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "case_study_uses_library_library_id_fkey"
-            columns: ["library_id"]
+            foreignKeyName: "compute_offering_provider_entity_id_fkey"
+            columns: ["provider_entity_id"]
             isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      case_study_uses_model_version: {
-        Row: {
-          ai_model_version_id: string
-          case_study_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          provenance_claim_id: string | null
-          usage_kind: string
-        }
-        Insert: {
-          ai_model_version_id: string
-          case_study_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          provenance_claim_id?: string | null
-          usage_kind?: string
-        }
-        Update: {
-          ai_model_version_id?: string
-          case_study_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          provenance_claim_id?: string | null
-          usage_kind?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "case_study_uses_model_version_ai_model_version_id_fkey"
-            columns: ["ai_model_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model_version"
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "case_study_uses_model_version_case_study_id_fkey"
-            columns: ["case_study_id"]
+            foreignKeyName: "compute_offering_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "case_study"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "compute_offering_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "compute_offering_tenant_id_provider_entity_id_fkey"
+            columns: ["tenant_id", "provider_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       concept: {
         Row: {
-          concept_kind: string | null
-          created_at: string
-          created_by_receipt_id: string
-          definition: string | null
+          description: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          preferred_label: string
-          slug: string
+          kind: string
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          concept_kind?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          definition?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          preferred_label: string
-          slug: string
+          description?: string | null
+          id: string
+          kind?: string
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          concept_kind?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
-          definition?: string | null
+          description?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          preferred_label?: string
-          slug?: string
+          kind?: string
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "concept_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "concept"
+            foreignKeyName: "concept_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concept_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "concept_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      concept_alias: {
+      corporate_transaction: {
         Row: {
-          alias: string
-          alias_kind: string
-          concept_id: string
-          created_at: string
-          created_by_receipt_id: string
+          announced_on: string | null
+          description: string | null
           id: string
+          kind: string
+          tenant_id: string
+          transaction_kind: string | null
         }
         Insert: {
-          alias: string
-          alias_kind?: string
-          concept_id: string
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
+          announced_on?: string | null
+          description?: string | null
+          id: string
+          kind?: string
+          tenant_id?: string
+          transaction_kind?: string | null
         }
         Update: {
-          alias?: string
-          alias_kind?: string
-          concept_id?: string
-          created_at?: string
-          created_by_receipt_id?: string
+          announced_on?: string | null
+          description?: string | null
           id?: string
+          kind?: string
+          tenant_id?: string
+          transaction_kind?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "concept_alias_concept_id_fkey"
-            columns: ["concept_id"]
-            isOneToOne: false
-            referencedRelation: "concept"
+            foreignKeyName: "corporate_transaction_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corporate_transaction_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "corporate_transaction_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       dataset: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          external_id: string
-          host: string
+          canonical_url: string | null
+          dataset_kind: string | null
           id: string
-          license_spdx: string | null
-          lifecycle_state: string
-          merged_into_id: string | null
-          modality: string[] | null
-          name: string
-          size_descriptor: string | null
+          kind: string
+          license_code: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          external_id: string
-          host: string
-          id?: string
-          license_spdx?: string | null
-          lifecycle_state: string
-          merged_into_id?: string | null
-          modality?: string[] | null
-          name: string
-          size_descriptor?: string | null
+          canonical_url?: string | null
+          dataset_kind?: string | null
+          id: string
+          kind?: string
+          license_code?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          external_id?: string
-          host?: string
+          canonical_url?: string | null
+          dataset_kind?: string | null
           id?: string
-          license_spdx?: string | null
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          modality?: string[] | null
-          name?: string
-          size_descriptor?: string | null
+          kind?: string
+          license_code?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "dataset_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "dataset"
+            foreignKeyName: "dataset_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dataset_license_code_fkey"
+            columns: ["license_code"]
+            isOneToOne: false
+            referencedRelation: "license"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "dataset_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "dataset_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
@@ -2205,1186 +2401,1212 @@ export type Database = {
         }
         Relationships: []
       }
+      entity: {
+        Row: {
+          created_at: string
+          created_by_receipt_id: string
+          display_name: string
+          id: string
+          kind: string
+          lifecycle: string
+          merged_into_id: string | null
+          projection_knowledge_seq: number | null
+          slug: string
+          summary: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_receipt_id: string
+          display_name: string
+          id?: string
+          kind: string
+          lifecycle?: string
+          merged_into_id?: string | null
+          projection_knowledge_seq?: number | null
+          slug: string
+          summary?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by_receipt_id?: string
+          display_name?: string
+          id?: string
+          kind?: string
+          lifecycle?: string
+          merged_into_id?: string | null
+          projection_knowledge_seq?: number | null
+          slug?: string
+          summary?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_merged_into_id_fkey"
+            columns: ["merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_tenant_id_merged_into_id_fkey"
+            columns: ["tenant_id", "merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      entity_alias: {
+        Row: {
+          alias: string
+          alias_kind: string
+          alias_normalized: string | null
+          entity_id: string
+          id: string
+          language: string | null
+          source_claim_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          alias: string
+          alias_kind: string
+          alias_normalized?: string | null
+          entity_id: string
+          id?: string
+          language?: string | null
+          source_claim_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          alias?: string
+          alias_kind?: string
+          alias_normalized?: string | null
+          entity_id?: string
+          id?: string
+          language?: string | null
+          source_claim_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_alias_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_alias_tenant_id_entity_id_fkey"
+            columns: ["tenant_id", "entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      entity_identifier: {
+        Row: {
+          entity_id: string
+          id: string
+          scheme: string
+          tenant_id: string
+          value: string
+        }
+        Insert: {
+          entity_id: string
+          id?: string
+          scheme: string
+          tenant_id?: string
+          value: string
+        }
+        Update: {
+          entity_id?: string
+          id?: string
+          scheme?: string
+          tenant_id?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_identifier_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_identifier_tenant_id_entity_id_fkey"
+            columns: ["tenant_id", "entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
       entity_merge: {
         Row: {
           created_at: string
-          created_by_receipt_id: string
-          entity_kind: string
+          from_entity_id: string
           id: string
-          loser_id: string
-          merge_reason: string
-          winner_id: string
+          reason: string
+          receipt_id: string
+          tenant_id: string
+          to_entity_id: string
         }
         Insert: {
           created_at?: string
-          created_by_receipt_id: string
-          entity_kind: string
+          from_entity_id: string
           id?: string
-          loser_id: string
-          merge_reason: string
-          winner_id: string
+          reason: string
+          receipt_id: string
+          tenant_id?: string
+          to_entity_id: string
         }
         Update: {
           created_at?: string
-          created_by_receipt_id?: string
-          entity_kind?: string
+          from_entity_id?: string
           id?: string
-          loser_id?: string
-          merge_reason?: string
-          winner_id?: string
+          reason?: string
+          receipt_id?: string
+          tenant_id?: string
+          to_entity_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "entity_merge_from_entity_id_fkey"
+            columns: ["from_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entity_merge_tenant_id_from_entity_id_fkey"
+            columns: ["tenant_id", "from_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "entity_merge_tenant_id_to_entity_id_fkey"
+            columns: ["tenant_id", "to_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "entity_merge_to_entity_id_fkey"
+            columns: ["to_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_series: {
+        Row: {
+          id: string
+          kind: string
+          name: string
+          organizer_entity_id: string | null
+          series_kind: string
+          slug: string
+          tenant_id: string
+          website_url: string | null
+        }
+        Insert: {
+          id: string
+          kind?: string
+          name: string
+          organizer_entity_id?: string | null
+          series_kind: string
+          slug: string
+          tenant_id?: string
+          website_url?: string | null
+        }
+        Update: {
+          id?: string
+          kind?: string
+          name?: string
+          organizer_entity_id?: string | null
+          series_kind?: string
+          slug?: string
+          tenant_id?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_series_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_series_organizer_entity_id_fkey"
+            columns: ["organizer_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_series_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "event_series_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "event_series_tenant_id_organizer_entity_id_fkey"
+            columns: ["tenant_id", "organizer_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      funding_round: {
+        Row: {
+          announced_on: string | null
+          currency: string | null
+          id: string
+          kind: string
+          round_kind: string | null
+          tenant_id: string
+        }
+        Insert: {
+          announced_on?: string | null
+          currency?: string | null
+          id: string
+          kind?: string
+          round_kind?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          announced_on?: string | null
+          currency?: string | null
+          id?: string
+          kind?: string
+          round_kind?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_round_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "funding_round_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "funding_round_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      industry_event: {
+        Row: {
+          city: string | null
+          country: string | null
+          edition_label: string | null
+          ends_on: string | null
+          event_kind: string
+          format: string | null
+          id: string
+          kind: string
+          name: string
+          parent_event_id: string | null
+          series_id: string | null
+          slug: string
+          starts_on: string | null
+          tenant_id: string
+          timezone: string | null
+          venue: string | null
+          website_url: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          edition_label?: string | null
+          ends_on?: string | null
+          event_kind: string
+          format?: string | null
+          id: string
+          kind?: string
+          name: string
+          parent_event_id?: string | null
+          series_id?: string | null
+          slug: string
+          starts_on?: string | null
+          tenant_id?: string
+          timezone?: string | null
+          venue?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          edition_label?: string | null
+          ends_on?: string | null
+          event_kind?: string
+          format?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          parent_event_id?: string | null
+          series_id?: string | null
+          slug?: string
+          starts_on?: string | null
+          tenant_id?: string
+          timezone?: string | null
+          venue?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "industry_event_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "industry_event_parent_event_id_fkey"
+            columns: ["parent_event_id"]
+            isOneToOne: false
+            referencedRelation: "industry_event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "industry_event_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "event_series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "industry_event_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "industry_event_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "industry_event_tenant_id_parent_event_id_fkey"
+            columns: ["tenant_id", "parent_event_id"]
+            isOneToOne: false
+            referencedRelation: "industry_event"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "industry_event_tenant_id_series_id_fkey"
+            columns: ["tenant_id", "series_id"]
+            isOneToOne: false
+            referencedRelation: "event_series"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
       }
       library: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
           description: string | null
-          display_name: string | null
-          ecosystem: string
-          first_released_on: string | null
-          homepage_url: string | null
+          ecosystem: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          package_name: string
-          primary_language: string | null
+          kind: string
+          package_name: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
           description?: string | null
-          display_name?: string | null
-          ecosystem: string
-          first_released_on?: string | null
-          homepage_url?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          package_name: string
-          primary_language?: string | null
+          ecosystem?: string | null
+          id: string
+          kind?: string
+          package_name?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
           description?: string | null
-          display_name?: string | null
-          ecosystem?: string
-          first_released_on?: string | null
-          homepage_url?: string | null
+          ecosystem?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          package_name?: string
-          primary_language?: string | null
+          kind?: string
+          package_name?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "library_ecosystem_fkey"
-            columns: ["ecosystem"]
+            foreignKeyName: "library_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "distribution_kind"
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "library_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      library_release: {
+        Row: {
+          id: string
+          kind: string
+          library_id: string
+          license_code: string | null
+          registry_id: string | null
+          released_on: string | null
+          source_revision_id: string | null
+          tenant_id: string
+          version_label: string
+        }
+        Insert: {
+          id: string
+          kind?: string
+          library_id: string
+          license_code?: string | null
+          registry_id?: string | null
+          released_on?: string | null
+          source_revision_id?: string | null
+          tenant_id?: string
+          version_label: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          library_id?: string
+          license_code?: string | null
+          registry_id?: string | null
+          released_on?: string | null
+          source_revision_id?: string | null
+          tenant_id?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_release_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_release_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_release_license_code_fkey"
+            columns: ["license_code"]
+            isOneToOne: false
+            referencedRelation: "license"
             referencedColumns: ["code"]
           },
           {
-            foreignKeyName: "library_merged_into_id_fkey"
-            columns: ["merged_into_id"]
+            foreignKeyName: "library_release_registry_id_fkey"
+            columns: ["registry_id"]
+            isOneToOne: false
+            referencedRelation: "registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_release_source_revision_id_fkey"
+            columns: ["source_revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_release_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "library_release_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "library_release_tenant_id_library_id_fkey"
+            columns: ["tenant_id", "library_id"]
             isOneToOne: false
             referencedRelation: "library"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "library_release_tenant_id_registry_id_fkey"
+            columns: ["tenant_id", "registry_id"]
+            isOneToOne: false
+            referencedRelation: "registry"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "library_release_tenant_id_source_revision_id_fkey"
+            columns: ["tenant_id", "source_revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
-      library_appeared_in_video: {
+      license: {
+        Row: {
+          code: string
+          name: string
+          spdx_id: string | null
+          url: string | null
+        }
+        Insert: {
+          code: string
+          name: string
+          spdx_id?: string | null
+          url?: string | null
+        }
+        Update: {
+          code?: string
+          name?: string
+          spdx_id?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
+      mcp_server: {
+        Row: {
+          description: string | null
+          id: string
+          kind: string
+          tenant_id: string
+          transport: string[] | null
+        }
+        Insert: {
+          description?: string | null
+          id: string
+          kind?: string
+          tenant_id?: string
+          transport?: string[] | null
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          kind?: string
+          tenant_id?: string
+          transport?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_server_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_server_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "mcp_server_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      mcp_server_surface: {
+        Row: {
+          id: string
+          name: string
+          schema_artifact_id: string | null
+          server_id: string
+          surface_kind: string
+          tenant_id: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          schema_artifact_id?: string | null
+          server_id: string
+          surface_kind: string
+          tenant_id?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          schema_artifact_id?: string | null
+          server_id?: string
+          surface_kind?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_server_surface_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_server"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mcp_server_surface_tenant_id_server_id_fkey"
+            columns: ["tenant_id", "server_id"]
+            isOneToOne: false
+            referencedRelation: "mcp_server"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      media_appearance: {
         Row: {
           confidence: number | null
           created_at: string
-          created_by_receipt_id: string
+          end_ms: number | null
+          entity_id: string
           id: string
-          library_id: string
-          lifecycle_state: string
           locator_id: string | null
-          prominence: string | null
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          video_id: string
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          locator_id?: string | null
-          prominence?: string | null
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id: string
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          locator_id?: string | null
-          prominence?: string | null
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "library_appeared_in_video_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "library_appeared_in_video_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "video"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_backed_by_repository: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          path_in_repo: string | null
-          provenance_claim_id: string | null
-          relationship_kind: string
-          repository_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          path_in_repo?: string | null
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          path_in_repo?: string | null
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "library_backed_by_repository_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "library_backed_by_repository_repository_id_fkey"
-            columns: ["repository_id"]
-            isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_depends_on_library: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          dependency_kind: string
-          depends_on_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          version_range: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          dependency_kind: string
-          depends_on_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          version_range?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          dependency_kind?: string
-          depends_on_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          version_range?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "library_depends_on_library_depends_on_id_fkey"
-            columns: ["depends_on_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "library_depends_on_library_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_implements_protocol_version: {
-        Row: {
-          ai_protocol_version_id: string
-          confidence: number | null
-          conformance: string
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          ai_protocol_version_id: string
-          confidence?: number | null
-          conformance: string
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          ai_protocol_version_id?: string
-          confidence?: number | null
-          conformance?: string
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "library_implements_protocol_version_ai_protocol_version_id_fkey"
-            columns: ["ai_protocol_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_protocol_version"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "library_implements_protocol_version_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_license_fact: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          license_spdx: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          license_spdx: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          license_spdx?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Relationships: [
-          {
-            foreignKeyName: "library_license_fact_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_maintained_by_person: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id: string | null
+          media_work_id: string
+          method: string
+          primary_claim_id: string | null
           role: string
-          source: string | null
-          valid_from: string
-          valid_to: string | null
+          start_ms: number | null
+          tenant_id: string
         }
         Insert: {
           confidence?: number | null
           created_at?: string
-          created_by_receipt_id: string
+          end_ms?: number | null
+          entity_id: string
           id?: string
-          library_id: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id?: string | null
-          role?: string
-          source?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          locator_id?: string | null
+          media_work_id: string
+          method: string
+          primary_claim_id?: string | null
+          role: string
+          start_ms?: number | null
+          tenant_id?: string
         }
         Update: {
           confidence?: number | null
           created_at?: string
-          created_by_receipt_id?: string
+          end_ms?: number | null
+          entity_id?: string
           id?: string
-          library_id?: string
-          lifecycle_state?: string
-          person_id?: string
-          provenance_claim_id?: string | null
+          locator_id?: string | null
+          media_work_id?: string
+          method?: string
+          primary_claim_id?: string | null
           role?: string
-          source?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          start_ms?: number | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "library_maintained_by_person_library_id_fkey"
-            columns: ["library_id"]
+            foreignKeyName: "media_appearance_entity_id_fkey"
+            columns: ["entity_id"]
             isOneToOne: false
-            referencedRelation: "library"
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "library_maintained_by_person_person_id_fkey"
-            columns: ["person_id"]
+            foreignKeyName: "media_appearance_media_work_id_fkey"
+            columns: ["media_work_id"]
             isOneToOne: false
-            referencedRelation: "person"
+            referencedRelation: "media_work"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_appearance_tenant_id_entity_id_fkey"
+            columns: ["tenant_id", "entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_appearance_tenant_id_media_work_id_fkey"
+            columns: ["tenant_id", "media_work_id"]
+            isOneToOne: false
+            referencedRelation: "media_work"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      media_channel: {
+        Row: {
+          created_at_platform: string | null
+          external_id: string
+          handle: string | null
+          id: string
+          kind: string
+          owner_entity_id: string | null
+          platform_code: string
+          tenant_id: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at_platform?: string | null
+          external_id: string
+          handle?: string | null
+          id: string
+          kind?: string
+          owner_entity_id?: string | null
+          platform_code: string
+          tenant_id?: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at_platform?: string | null
+          external_id?: string
+          handle?: string | null
+          id?: string
+          kind?: string
+          owner_entity_id?: string | null
+          platform_code?: string
+          tenant_id?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_channel_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_channel_owner_entity_id_fkey"
+            columns: ["owner_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_channel_platform_code_fkey"
+            columns: ["platform_code"]
+            isOneToOne: false
+            referencedRelation: "media_platform"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "media_channel_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_channel_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "media_channel_tenant_id_owner_entity_id_fkey"
+            columns: ["tenant_id", "owner_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      media_platform: {
+        Row: {
+          channel_url_template: string | null
+          code: string
+          media_url_template: string | null
+          name: string
+          product_entity_id: string | null
+          timecode_param: string | null
+        }
+        Insert: {
+          channel_url_template?: string | null
+          code: string
+          media_url_template?: string | null
+          name: string
+          product_entity_id?: string | null
+          timecode_param?: string | null
+        }
+        Update: {
+          channel_url_template?: string | null
+          code?: string
+          media_url_template?: string | null
+          name?: string
+          product_entity_id?: string | null
+          timecode_param?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_platform_product_entity_id_fkey"
+            columns: ["product_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
         ]
       }
-      library_maintenance_status_fact: {
+      media_series: {
         Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
+          description: string | null
+          external_id: string | null
           id: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          status: string
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
+          industry_event_id: string | null
+          kind: string
+          platform_code: string | null
+          primary_channel_id: string | null
+          series_kind: string
+          tenant_id: string
+          title: string
         }
         Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          status: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          description?: string | null
+          external_id?: string | null
+          id: string
+          industry_event_id?: string | null
+          kind?: string
+          platform_code?: string | null
+          primary_channel_id?: string | null
+          series_kind: string
+          tenant_id?: string
+          title: string
         }
         Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
+          description?: string | null
+          external_id?: string | null
           id?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          status?: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          industry_event_id?: string | null
+          kind?: string
+          platform_code?: string | null
+          primary_channel_id?: string | null
+          series_kind?: string
+          tenant_id?: string
+          title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "library_maintenance_status_fact_library_id_fkey"
-            columns: ["library_id"]
-            isOneToOne: false
-            referencedRelation: "library"
+            foreignKeyName: "media_series_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_series_industry_event_id_fkey"
+            columns: ["industry_event_id"]
+            isOneToOne: false
+            referencedRelation: "industry_event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_series_platform_code_fkey"
+            columns: ["platform_code"]
+            isOneToOne: false
+            referencedRelation: "media_platform"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "media_series_primary_channel_id_fkey"
+            columns: ["primary_channel_id"]
+            isOneToOne: false
+            referencedRelation: "media_channel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_series_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_series_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "media_series_tenant_id_industry_event_id_fkey"
+            columns: ["tenant_id", "industry_event_id"]
+            isOneToOne: false
+            referencedRelation: "industry_event"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_series_tenant_id_primary_channel_id_fkey"
+            columns: ["tenant_id", "primary_channel_id"]
+            isOneToOne: false
+            referencedRelation: "media_channel"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
-      library_supports_model_version: {
+      media_work: {
         Row: {
-          ai_model_version_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
+          channel_id: string | null
+          duration_ms: number | null
+          external_id: string | null
+          height: number | null
           id: string
-          integration_kind: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
+          kind: string
+          language: string | null
+          media_kind: string
+          platform_code: string
+          published_at: string | null
+          tenant_id: string
+          title: string
+          url: string | null
+          width: number | null
         }
         Insert: {
-          ai_model_version_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          integration_kind: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          channel_id?: string | null
+          duration_ms?: number | null
+          external_id?: string | null
+          height?: number | null
+          id: string
+          kind?: string
+          language?: string | null
+          media_kind: string
+          platform_code: string
+          published_at?: string | null
+          tenant_id?: string
+          title: string
+          url?: string | null
+          width?: number | null
         }
         Update: {
-          ai_model_version_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
+          channel_id?: string | null
+          duration_ms?: number | null
+          external_id?: string | null
+          height?: number | null
           id?: string
-          integration_kind?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          language?: string | null
+          media_kind?: string
+          platform_code?: string
+          published_at?: string | null
+          tenant_id?: string
+          title?: string
+          url?: string | null
+          width?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "library_supports_model_version_ai_model_version_id_fkey"
-            columns: ["ai_model_version_id"]
+            foreignKeyName: "media_work_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "media_channel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_work_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_work_platform_code_fkey"
+            columns: ["platform_code"]
+            isOneToOne: false
+            referencedRelation: "media_platform"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "media_work_tenant_id_channel_id_fkey"
+            columns: ["tenant_id", "channel_id"]
+            isOneToOne: false
+            referencedRelation: "media_channel"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_work_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "media_work_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      model_offering: {
+        Row: {
+          id: string
+          kind: string
+          model_version_id: string
+          offering_key: string
+          provider_entity_id: string
+          tenant_id: string
+        }
+        Insert: {
+          id: string
+          kind?: string
+          model_version_id: string
+          offering_key: string
+          provider_entity_id: string
+          tenant_id?: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          model_version_id?: string
+          offering_key?: string
+          provider_entity_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_offering_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "model_offering_model_version_id_fkey"
+            columns: ["model_version_id"]
             isOneToOne: false
             referencedRelation: "ai_model_version"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "library_supports_model_version_library_id_fkey"
-            columns: ["library_id"]
+            foreignKeyName: "model_offering_provider_entity_id_fkey"
+            columns: ["provider_entity_id"]
             isOneToOne: false
-            referencedRelation: "library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          distribution_kind: string
-          ecosystem: string | null
-          id: string
-          license_spdx: string | null
-          lifecycle_state: string
-          maintainer_organization_id: string | null
-          merged_into_id: string | null
-          name: string
-          package_name: string | null
-          registry_id: string | null
-          repository_id: string | null
-          tenant_id: string
-          transport_kinds: string[]
-          updated_at: string
-          updated_by_receipt_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          distribution_kind: string
-          ecosystem?: string | null
-          id?: string
-          license_spdx?: string | null
-          lifecycle_state: string
-          maintainer_organization_id?: string | null
-          merged_into_id?: string | null
-          name: string
-          package_name?: string | null
-          registry_id?: string | null
-          repository_id?: string | null
-          tenant_id?: string
-          transport_kinds?: string[]
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          distribution_kind?: string
-          ecosystem?: string | null
-          id?: string
-          license_spdx?: string | null
-          lifecycle_state?: string
-          maintainer_organization_id?: string | null
-          merged_into_id?: string | null
-          name?: string
-          package_name?: string | null
-          registry_id?: string | null
-          repository_id?: string | null
-          tenant_id?: string
-          transport_kinds?: string[]
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_distribution_kind_fkey"
-            columns: ["distribution_kind"]
-            isOneToOne: false
-            referencedRelation: "distribution_kind"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "mcp_server_ecosystem_fkey"
-            columns: ["ecosystem"]
-            isOneToOne: false
-            referencedRelation: "distribution_kind"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "mcp_server_maintainer_organization_id_fkey"
-            columns: ["maintainer_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "mcp_server_merged_into_id_fkey"
-            columns: ["merged_into_id"]
+            foreignKeyName: "model_offering_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "mcp_server_repository_id_fkey"
-            columns: ["repository_id"]
+            foreignKeyName: "model_offering_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_backed_by_repository: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          repository_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_backed_by_repository_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
           {
-            foreignKeyName: "mcp_server_backed_by_repository_repository_id_fkey"
-            columns: ["repository_id"]
+            foreignKeyName: "model_offering_tenant_id_model_version_id_fkey"
+            columns: ["tenant_id", "model_version_id"]
             isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_prompt: {
-        Row: {
-          arguments: Json | null
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          id: string
-          mcp_server_version_id: string
-          name: string
-        }
-        Insert: {
-          arguments?: Json | null
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          id?: string
-          mcp_server_version_id: string
-          name: string
-        }
-        Update: {
-          arguments?: Json | null
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          id?: string
-          mcp_server_version_id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_prompt_mcp_server_version_id_fkey"
-            columns: ["mcp_server_version_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_registry_status_fact: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id: string | null
-          status: string
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id?: string | null
-          status: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          provenance_claim_id?: string | null
-          status?: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_registry_status_fact_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_resource: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          id: string
-          mcp_server_version_id: string
-          name: string
-          uri_template: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          id?: string
-          mcp_server_version_id: string
-          name: string
-          uri_template?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          id?: string
-          mcp_server_version_id?: string
-          name?: string
-          uri_template?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_resource_mcp_server_version_id_fkey"
-            columns: ["mcp_server_version_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_tool: {
-        Row: {
-          annotations: Json | null
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          id: string
-          input_schema: Json | null
-          mcp_server_version_id: string
-          output_schema: Json | null
-          tool_name: string
-        }
-        Insert: {
-          annotations?: Json | null
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          id?: string
-          input_schema?: Json | null
-          mcp_server_version_id: string
-          output_schema?: Json | null
-          tool_name: string
-        }
-        Update: {
-          annotations?: Json | null
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          id?: string
-          input_schema?: Json | null
-          mcp_server_version_id?: string
-          output_schema?: Json | null
-          tool_name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_tool_mcp_server_version_id_fkey"
-            columns: ["mcp_server_version_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_version: {
-        Row: {
-          auth_model: string | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          mcp_server_id: string
-          packaging_hash: string | null
-          protocol_version_id: string | null
-          released_on: string | null
-          version_label: string
-        }
-        Insert: {
-          auth_model?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          mcp_server_id: string
-          packaging_hash?: string | null
-          protocol_version_id?: string | null
-          released_on?: string | null
-          version_label: string
-        }
-        Update: {
-          auth_model?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          mcp_server_id?: string
-          packaging_hash?: string | null
-          protocol_version_id?: string | null
-          released_on?: string | null
-          version_label?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_version_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
+            referencedRelation: "ai_model_version"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "mcp_server_version_protocol_version_id_fkey"
-            columns: ["protocol_version_id"]
+            foreignKeyName: "model_offering_tenant_id_provider_entity_id_fkey"
+            columns: ["tenant_id", "provider_entity_id"]
             isOneToOne: false
-            referencedRelation: "ai_protocol_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      mcp_server_wraps_product: {
-        Row: {
-          confidence: number | null
-          coverage: string | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          product_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          coverage?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          product_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          coverage?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          product_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "mcp_server_wraps_product_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "mcp_server_wraps_product_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       organization: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          display_name: string
+          country_code: string | null
           founded_on: string | null
           id: string
+          kind: string
           legal_name: string | null
-          lifecycle_state: string
-          merged_into_id: string | null
-          org_kind: string | null
-          slug: string
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
           website_url: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          display_name: string
+          country_code?: string | null
           founded_on?: string | null
-          id?: string
-          legal_name?: string | null
-          lifecycle_state: string
-          merged_into_id?: string | null
-          org_kind?: string | null
-          slug: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          website_url?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          display_name?: string
-          founded_on?: string | null
-          id?: string
-          legal_name?: string | null
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          org_kind?: string | null
-          slug?: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          website_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      organization_identifier: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          organization_id: string
-          scheme: string
-          value: string
+          kind?: string
+          legal_name?: string | null
+          tenant_id?: string
+          website_url?: string | null
         }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id: string
+        Update: {
+          country_code?: string | null
+          founded_on?: string | null
           id?: string
-          organization_id: string
-          scheme: string
-          value: string
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          organization_id?: string
-          scheme?: string
-          value?: string
+          kind?: string
+          legal_name?: string | null
+          tenant_id?: string
+          website_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "organization_identifier_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      organization_product_relationship: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          is_primary: boolean
-          organization_id: string
-          product_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          valid_from: string | null
-          valid_to: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          is_primary?: boolean
-          organization_id: string
-          product_id: string
-          provenance_claim_id?: string | null
-          relationship_kind: string
-          valid_from?: string | null
-          valid_to?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          is_primary?: boolean
-          organization_id?: string
-          product_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          valid_from?: string | null
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_product_relationship_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
+            foreignKeyName: "organization_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "organization_product_relationship_product_id_fkey"
-            columns: ["product_id"]
+            foreignKeyName: "organization_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      organization_relationship: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          from_organization_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          to_organization_id: string
-          valid_from: string | null
-          valid_to: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_organization_id: string
-          provenance_claim_id?: string | null
-          relationship_kind: string
-          to_organization_id: string
-          valid_from?: string | null
-          valid_to?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          from_organization_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          to_organization_id?: string
-          valid_from?: string | null
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_relationship_from_organization_id_fkey"
-            columns: ["from_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "organization_relationship_to_organization_id_fkey"
-            columns: ["to_organization_id"]
+            foreignKeyName: "organization_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
@@ -3392,1201 +3614,183 @@ export type Database = {
         Row: {
           abstract: string | null
           arxiv_id: string | null
-          created_at: string
-          created_by_receipt_id: string
           doi: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          openreview_id: string | null
-          paper_kind: string | null
+          kind: string
           published_on: string | null
           tenant_id: string
           title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
-          venue: string | null
         }
         Insert: {
           abstract?: string | null
           arxiv_id?: string | null
-          created_at?: string
-          created_by_receipt_id: string
           doi?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          openreview_id?: string | null
-          paper_kind?: string | null
+          id: string
+          kind?: string
           published_on?: string | null
           tenant_id?: string
           title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          venue?: string | null
         }
         Update: {
           abstract?: string | null
           arxiv_id?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
           doi?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          openreview_id?: string | null
-          paper_kind?: string | null
+          kind?: string
           published_on?: string | null
           tenant_id?: string
           title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          venue?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "paper_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paper_appeared_in_talk: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          paper_id: string
-          provenance_claim_id: string | null
-          talk_id: string
-          treatment: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          paper_id: string
-          provenance_claim_id?: string | null
-          talk_id: string
-          treatment?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          paper_id?: string
-          provenance_claim_id?: string | null
-          talk_id?: string
-          treatment?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_appeared_in_talk_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
+            foreignKeyName: "paper_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "paper_appeared_in_talk_talk_id_fkey"
-            columns: ["talk_id"]
+            foreignKeyName: "paper_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "talk"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paper_appeared_in_video: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          locator_id: string | null
-          paper_id: string
-          provenance_claim_id: string | null
-          treatment: string | null
-          valid_from: string
-          valid_to: string | null
-          video_id: string
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          locator_id?: string | null
-          paper_id: string
-          provenance_claim_id?: string | null
-          treatment?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id: string
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          locator_id?: string | null
-          paper_id?: string
-          provenance_claim_id?: string | null
-          treatment?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_appeared_in_video_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "paper_appeared_in_video_video_id_fkey"
-            columns: ["video_id"]
+            foreignKeyName: "paper_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "video"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paper_authored_by_person: {
-        Row: {
-          affiliation_organization_id: string | null
-          author_position: number | null
-          confidence: number | null
-          corresponding: boolean
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          paper_id: string
-          person_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          affiliation_organization_id?: string | null
-          author_position?: number | null
-          confidence?: number | null
-          corresponding?: boolean
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          paper_id: string
-          person_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          affiliation_organization_id?: string | null
-          author_position?: number | null
-          confidence?: number | null
-          corresponding?: boolean
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          paper_id?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_authored_by_person_affiliation_organization_id_fkey"
-            columns: ["affiliation_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "paper_authored_by_person_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "paper_authored_by_person_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paper_introduces_model: {
-        Row: {
-          ai_model_id: string
-          created_at: string
-          created_by_receipt_id: string | null
-          paper_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-        }
-        Insert: {
-          ai_model_id: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          paper_id: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-        }
-        Update: {
-          ai_model_id?: string
-          created_at?: string
-          created_by_receipt_id?: string | null
-          paper_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_introduces_model_ai_model_id_fkey"
-            columns: ["ai_model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "paper_introduces_model_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      paper_retraction_fact: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          notice_url: string | null
-          paper_id: string
-          provenance_claim_id: string | null
-          state: string
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          notice_url?: string | null
-          paper_id: string
-          provenance_claim_id?: string | null
-          state: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          notice_url?: string | null
-          paper_id?: string
-          provenance_claim_id?: string | null
-          state?: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
-        }
-        Relationships: [
-          {
-            foreignKeyName: "paper_retraction_fact_paper_id_fkey"
-            columns: ["paper_id"]
-            isOneToOne: false
-            referencedRelation: "paper"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       person: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          display_name: string
           family_name: string | null
           given_name: string | null
-          headline: string | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          primary_organization_id: string | null
-          primary_role: string | null
-          slug: string
+          kind: string
+          orcid: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          display_name: string
           family_name?: string | null
           given_name?: string | null
-          headline?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          primary_organization_id?: string | null
-          primary_role?: string | null
-          slug: string
+          id: string
+          kind?: string
+          orcid?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          display_name?: string
           family_name?: string | null
           given_name?: string | null
-          headline?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          primary_organization_id?: string | null
-          primary_role?: string | null
-          slug?: string
+          kind?: string
+          orcid?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "person_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "person"
+            foreignKeyName: "person_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "person_primary_organization_id_fkey"
-            columns: ["primary_organization_id"]
+            foreignKeyName: "person_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_appeared_in_video: {
-        Row: {
-          appearance_role: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          locator_id: string | null
-          person_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          video_id: string
-        }
-        Insert: {
-          appearance_role?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          locator_id?: string | null
-          person_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id: string
-        }
-        Update: {
-          appearance_role?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          locator_id?: string | null
-          person_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_appeared_in_video_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "person_appeared_in_video_video_id_fkey"
-            columns: ["video_id"]
+            foreignKeyName: "person_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "video"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_created_agent_skill: {
-        Row: {
-          agent_skill_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id: string | null
-          role: string
-          since: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          agent_skill_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id?: string | null
-          role?: string
-          since?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          agent_skill_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          role?: string
-          since?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_created_agent_skill_agent_skill_id_fkey"
-            columns: ["agent_skill_id"]
-            isOneToOne: false
-            referencedRelation: "agent_skill"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "person_created_agent_skill_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_created_mcp_server: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          person_id: string
-          provenance_claim_id: string | null
-          role: string
-          since: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          person_id: string
-          provenance_claim_id?: string | null
-          role?: string
-          since?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          role?: string
-          since?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_created_mcp_server_mcp_server_id_fkey"
-            columns: ["mcp_server_id"]
-            isOneToOne: false
-            referencedRelation: "mcp_server"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "person_created_mcp_server_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_employed_by_organization: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          employment_kind: string | null
-          id: string
-          lifecycle_state: string
-          organization_id: string
-          person_id: string
-          provenance_claim_id: string | null
-          seniority: string | null
-          title: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          employment_kind?: string | null
-          id?: string
-          lifecycle_state: string
-          organization_id: string
-          person_id: string
-          provenance_claim_id?: string | null
-          seniority?: string | null
-          title?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          employment_kind?: string | null
-          id?: string
-          lifecycle_state?: string
-          organization_id?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          seniority?: string | null
-          title?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_employed_by_organization_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "person_employed_by_organization_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_founded_organization: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          founded_on: string | null
-          founder_role: string | null
-          id: string
-          lifecycle_state: string
-          organization_id: string
-          person_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          founded_on?: string | null
-          founder_role?: string | null
-          id?: string
-          lifecycle_state: string
-          organization_id: string
-          person_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          founded_on?: string | null
-          founder_role?: string | null
-          id?: string
-          lifecycle_state?: string
-          organization_id?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_founded_organization_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "person_founded_organization_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_identifier: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          person_id: string
-          scheme: string
-          value: string
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          person_id: string
-          scheme: string
-          value: string
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          person_id?: string
-          scheme?: string
-          value?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_identifier_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      person_presented_at_talk: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id: string | null
-          speaker_position: number | null
-          speaker_role: string
-          talk_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          person_id: string
-          provenance_claim_id?: string | null
-          speaker_position?: number | null
-          speaker_role?: string
-          talk_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          person_id?: string
-          provenance_claim_id?: string | null
-          speaker_position?: number | null
-          speaker_role?: string
-          talk_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "person_presented_at_talk_person_id_fkey"
-            columns: ["person_id"]
-            isOneToOne: false
-            referencedRelation: "person"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "person_presented_at_talk_talk_id_fkey"
-            columns: ["talk_id"]
-            isOneToOne: false
-            referencedRelation: "talk"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       product: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          display_name: string
-          homepage_url: string | null
           id: string
-          launched_on: string | null
-          lifecycle_state: string
-          merged_into_id: string | null
+          kind: string
           product_kind: string | null
-          slug: string
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
-          vendor_organization_id: string | null
+          website_url: string | null
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          display_name: string
-          homepage_url?: string | null
-          id?: string
-          launched_on?: string | null
-          lifecycle_state: string
-          merged_into_id?: string | null
+          id: string
+          kind?: string
           product_kind?: string | null
-          slug: string
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          vendor_organization_id?: string | null
+          website_url?: string | null
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          display_name?: string
-          homepage_url?: string | null
           id?: string
-          launched_on?: string | null
-          lifecycle_state?: string
-          merged_into_id?: string | null
+          kind?: string
           product_kind?: string | null
-          slug?: string
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          vendor_organization_id?: string | null
+          website_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "product_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "product"
+            foreignKeyName: "product_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "product_vendor_organization_id_fkey"
-            columns: ["vendor_organization_id"]
+            foreignKeyName: "product_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_appeared_in_video: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          locator_id: string | null
-          product_id: string
-          prominence: string | null
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-          video_id: string
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          locator_id?: string | null
-          product_id: string
-          prominence?: string | null
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id: string
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          locator_id?: string | null
-          product_id?: string
-          prominence?: string | null
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_appeared_in_video_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "product_appeared_in_video_video_id_fkey"
-            columns: ["video_id"]
+            foreignKeyName: "product_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "video"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_backed_by_repository: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          official: boolean
-          product_id: string
-          provenance_claim_id: string | null
-          relationship_kind: string
-          repository_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          official?: boolean
-          product_id: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          official?: boolean
-          product_id?: string
-          provenance_claim_id?: string | null
-          relationship_kind?: string
-          repository_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_backed_by_repository_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_backed_by_repository_repository_id_fkey"
-            columns: ["repository_id"]
-            isOneToOne: false
-            referencedRelation: "repository"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_built_on_model_version: {
-        Row: {
-          ai_model_version_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          product_id: string
-          provenance_claim_id: string | null
-          usage_kind: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          ai_model_version_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          product_id: string
-          provenance_claim_id?: string | null
-          usage_kind: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          ai_model_version_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          product_id?: string
-          provenance_claim_id?: string | null
-          usage_kind?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_built_on_model_version_ai_model_version_id_fkey"
-            columns: ["ai_model_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_model_version"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_built_on_model_version_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_family: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string
-          description: string | null
-          display_name: string
-          id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          slug: string
-          tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
-          vendor_organization_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          description?: string | null
-          display_name: string
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          slug: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          vendor_organization_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          description?: string | null
-          display_name?: string
-          id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          slug?: string
-          tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          vendor_organization_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_family_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "product_family"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_family_vendor_organization_id_fkey"
-            columns: ["vendor_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_family_member: {
-        Row: {
-          created_at: string
-          created_by_receipt_id: string | null
-          member_kind: string
-          product_family_id: string
-          product_id: string
-          provenance_claim_id: string | null
-          sort_order: number
-        }
-        Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          member_kind?: string
-          product_family_id: string
-          product_id: string
-          provenance_claim_id?: string | null
-          sort_order?: number
-        }
-        Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
-          member_kind?: string
-          product_family_id?: string
-          product_id?: string
-          provenance_claim_id?: string | null
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_family_member_product_family_id_fkey"
-            columns: ["product_family_id"]
-            isOneToOne: false
-            referencedRelation: "product_family"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_family_member_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "product"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       product_feature: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string | null
           description: string | null
+          feature_key: string
           id: string
-          introduced_in_version_id: string | null
-          lifecycle_state: string
-          name: string
+          kind: string
           product_id: string
-          provenance_claim_id: string | null
-          retired_in_version_id: string | null
-          slug: string
-          updated_at: string
+          tenant_id: string
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id?: string | null
           description?: string | null
-          id?: string
-          introduced_in_version_id?: string | null
-          lifecycle_state: string
-          name: string
+          feature_key: string
+          id: string
+          kind?: string
           product_id: string
-          provenance_claim_id?: string | null
-          retired_in_version_id?: string | null
-          slug: string
-          updated_at?: string
+          tenant_id?: string
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string | null
           description?: string | null
+          feature_key?: string
           id?: string
-          introduced_in_version_id?: string | null
-          lifecycle_state?: string
-          name?: string
+          kind?: string
           product_id?: string
-          provenance_claim_id?: string | null
-          retired_in_version_id?: string | null
-          slug?: string
-          updated_at?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "product_feature_introduced_in_version_id_fkey"
-            columns: ["introduced_in_version_id"]
-            isOneToOne: false
-            referencedRelation: "product_version"
+            foreignKeyName: "product_feature_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
@@ -4597,112 +3801,58 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "product_feature_retired_in_version_id_fkey"
-            columns: ["retired_in_version_id"]
+            foreignKeyName: "product_feature_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "product_version"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      product_implements_protocol_version: {
-        Row: {
-          ai_protocol_version_id: string
-          client_or_server: string | null
-          confidence: number | null
-          conformance: string
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          product_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          ai_protocol_version_id: string
-          client_or_server?: string | null
-          confidence?: number | null
-          conformance: string
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          product_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          ai_protocol_version_id?: string
-          client_or_server?: string | null
-          confidence?: number | null
-          conformance?: string
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          product_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_implements_protocol_version_ai_protocol_version_id_fkey"
-            columns: ["ai_protocol_version_id"]
-            isOneToOne: false
-            referencedRelation: "ai_protocol_version"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "product_implements_protocol_version_product_id_fkey"
-            columns: ["product_id"]
+            foreignKeyName: "product_feature_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "product_feature_tenant_id_product_id_fkey"
+            columns: ["tenant_id", "product_id"]
             isOneToOne: false
             referencedRelation: "product"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       product_version: {
         Row: {
-          created_at: string
-          created_by_receipt_id: string
-          ended_on: string | null
           id: string
-          notes: string | null
+          kind: string
           product_id: string
-          release_channel: string | null
-          release_url: string | null
-          released_on: string | null
+          tenant_id: string
           version_label: string
         }
         Insert: {
-          created_at?: string
-          created_by_receipt_id: string
-          ended_on?: string | null
-          id?: string
-          notes?: string | null
+          id: string
+          kind?: string
           product_id: string
-          release_channel?: string | null
-          release_url?: string | null
-          released_on?: string | null
+          tenant_id?: string
           version_label: string
         }
         Update: {
-          created_at?: string
-          created_by_receipt_id?: string
-          ended_on?: string | null
           id?: string
-          notes?: string | null
+          kind?: string
           product_id?: string
-          release_channel?: string | null
-          release_url?: string | null
-          released_on?: string | null
+          tenant_id?: string
           version_label?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_version_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_version_product_id_fkey"
             columns: ["product_id"]
@@ -4710,460 +3860,741 @@ export type Database = {
             referencedRelation: "product"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "product_version_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "product_version_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+          {
+            foreignKeyName: "product_version_tenant_id_product_id_fkey"
+            columns: ["tenant_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "product"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      registry: {
+        Row: {
+          canonical_url: string | null
+          id: string
+          kind: string
+          registry_kind: string | null
+          tenant_id: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          id: string
+          kind?: string
+          registry_kind?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          id?: string
+          kind?: string
+          registry_kind?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registry_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registry_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "registry_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      registry_listing: {
+        Row: {
+          canonical_url: string | null
+          entity_id: string
+          external_id: string
+          id: string
+          registry_id: string
+          tenant_id: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          entity_id: string
+          external_id: string
+          id?: string
+          registry_id: string
+          tenant_id?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          entity_id?: string
+          external_id?: string
+          id?: string
+          registry_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registry_listing_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registry_listing_registry_id_fkey"
+            columns: ["registry_id"]
+            isOneToOne: false
+            referencedRelation: "registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registry_listing_tenant_id_entity_id_fkey"
+            columns: ["tenant_id", "entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "registry_listing_tenant_id_registry_id_fkey"
+            columns: ["tenant_id", "registry_id"]
+            isOneToOne: false
+            referencedRelation: "registry"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      relationship: {
+        Row: {
+          created_at: string
+          episode: number
+          from_entity_id: string
+          id: string
+          k_from: number
+          k_to: number | null
+          kind: string
+          primary_claim_id: string | null
+          properties: Json
+          qualifier: string
+          tenant_id: string
+          to_entity_id: string
+        }
+        Insert: {
+          created_at?: string
+          episode?: number
+          from_entity_id: string
+          id?: string
+          k_from: number
+          k_to?: number | null
+          kind: string
+          primary_claim_id?: string | null
+          properties?: Json
+          qualifier?: string
+          tenant_id?: string
+          to_entity_id: string
+        }
+        Update: {
+          created_at?: string
+          episode?: number
+          from_entity_id?: string
+          id?: string
+          k_from?: number
+          k_to?: number | null
+          kind?: string
+          primary_claim_id?: string | null
+          properties?: Json
+          qualifier?: string
+          tenant_id?: string
+          to_entity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relationship_from_entity_id_fkey"
+            columns: ["from_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relationship_tenant_id_from_entity_id_fkey"
+            columns: ["tenant_id", "from_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "relationship_tenant_id_to_entity_id_fkey"
+            columns: ["tenant_id", "to_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "relationship_to_entity_id_fkey"
+            columns: ["to_entity_id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
         ]
       }
       repository: {
         Row: {
-          created_at: string
           created_at_host: string | null
-          created_by_receipt_id: string
-          default_branch: string | null
-          description: string | null
+          fork_of_repository_id: string | null
           host: string
           id: string
           is_fork: boolean
-          lifecycle_state: string
-          merged_into_id: string | null
+          kind: string
           name: string
           owner: string
-          primary_language: string | null
+          provider_native_id: string | null
           tenant_id: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          created_at?: string
           created_at_host?: string | null
-          created_by_receipt_id: string
-          default_branch?: string | null
-          description?: string | null
+          fork_of_repository_id?: string | null
           host: string
-          id?: string
+          id: string
           is_fork?: boolean
-          lifecycle_state: string
-          merged_into_id?: string | null
+          kind?: string
           name: string
           owner: string
-          primary_language?: string | null
+          provider_native_id?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          created_at?: string
           created_at_host?: string | null
-          created_by_receipt_id?: string
-          default_branch?: string | null
-          description?: string | null
+          fork_of_repository_id?: string | null
           host?: string
           id?: string
           is_fork?: boolean
-          lifecycle_state?: string
-          merged_into_id?: string | null
+          kind?: string
           name?: string
           owner?: string
-          primary_language?: string | null
+          provider_native_id?: string | null
           tenant_id?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "repository_merged_into_id_fkey"
-            columns: ["merged_into_id"]
+            foreignKeyName: "repository_fork_of_repository_id_fkey"
+            columns: ["fork_of_repository_id"]
             isOneToOne: false
             referencedRelation: "repository"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      repository_alias: {
-        Row: {
-          created_by_receipt_id: string
-          host: string
-          id: string
-          name: string
-          observed_at: string
-          owner: string
-          repository_id: string
-        }
-        Insert: {
-          created_by_receipt_id: string
-          host: string
-          id?: string
-          name: string
-          observed_at?: string
-          owner: string
-          repository_id: string
-        }
-        Update: {
-          created_by_receipt_id?: string
-          host?: string
-          id?: string
-          name?: string
-          observed_at?: string
-          owner?: string
-          repository_id?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "repository_alias_repository_id_fkey"
-            columns: ["repository_id"]
+            foreignKeyName: "repository_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_tenant_id_fork_of_repository_id_fkey"
+            columns: ["tenant_id", "fork_of_repository_id"]
             isOneToOne: false
             referencedRelation: "repository"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      repository_archival_fact: {
+      repository_file: {
         Row: {
-          archived: boolean
-          confidence: number | null
+          blob_sha: string | null
+          capture_id: string | null
           created_at: string
-          created_by_receipt_id: string
+          file_role: string
           id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
+          language: string | null
+          module_id: string | null
+          path: string
           repository_id: string
-          valid_from: string
-          valid_to: string | null
-          validity: unknown
+          revision_id: string
+          size_bytes: number | null
+          tenant_id: string
         }
         Insert: {
-          archived: boolean
-          confidence?: number | null
+          blob_sha?: string | null
+          capture_id?: string | null
           created_at?: string
-          created_by_receipt_id: string
+          file_role: string
           id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
+          language?: string | null
+          module_id?: string | null
+          path: string
           repository_id: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          revision_id: string
+          size_bytes?: number | null
+          tenant_id?: string
         }
         Update: {
-          archived?: boolean
-          confidence?: number | null
+          blob_sha?: string | null
+          capture_id?: string | null
           created_at?: string
-          created_by_receipt_id?: string
+          file_role?: string
           id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
+          language?: string | null
+          module_id?: string | null
+          path?: string
           repository_id?: string
-          valid_from?: string
-          valid_to?: string | null
-          validity?: unknown
+          revision_id?: string
+          size_bytes?: number | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "repository_archival_fact_repository_id_fkey"
+            foreignKeyName: "repository_file_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "repository_module"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_file_repository_id_fkey"
             columns: ["repository_id"]
             isOneToOne: false
             referencedRelation: "repository"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_file_revision_id_fkey"
+            columns: ["revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_file_tenant_id_module_id_fkey"
+            columns: ["tenant_id", "module_id"]
+            isOneToOne: false
+            referencedRelation: "repository_module"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_file_tenant_id_repository_id_fkey"
+            columns: ["tenant_id", "repository_id"]
+            isOneToOne: false
+            referencedRelation: "repository"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_file_tenant_id_revision_id_fkey"
+            columns: ["tenant_id", "revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
-      repository_implements_paper: {
+      repository_module: {
         Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          fidelity: string
+          description: string | null
+          first_seen_revision_id: string | null
           id: string
-          lifecycle_state: string
-          notes: string | null
-          paper_id: string
-          provenance_claim_id: string | null
+          language: string | null
+          last_seen_revision_id: string | null
+          library_id: string | null
+          manifest_kind: string | null
+          manifest_path: string | null
+          module_kind: string
+          name: string | null
+          path: string
           repository_id: string
-          valid_from: string
-          valid_to: string | null
+          tenant_id: string
         }
         Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          fidelity: string
+          description?: string | null
+          first_seen_revision_id?: string | null
           id?: string
-          lifecycle_state: string
-          notes?: string | null
-          paper_id: string
-          provenance_claim_id?: string | null
+          language?: string | null
+          last_seen_revision_id?: string | null
+          library_id?: string | null
+          manifest_kind?: string | null
+          manifest_path?: string | null
+          module_kind: string
+          name?: string | null
+          path: string
           repository_id: string
-          valid_from?: string
-          valid_to?: string | null
+          tenant_id?: string
         }
         Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          fidelity?: string
+          description?: string | null
+          first_seen_revision_id?: string | null
           id?: string
-          lifecycle_state?: string
-          notes?: string | null
-          paper_id?: string
-          provenance_claim_id?: string | null
+          language?: string | null
+          last_seen_revision_id?: string | null
+          library_id?: string | null
+          manifest_kind?: string | null
+          manifest_path?: string | null
+          module_kind?: string
+          name?: string | null
+          path?: string
           repository_id?: string
-          valid_from?: string
-          valid_to?: string | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "repository_implements_paper_paper_id_fkey"
-            columns: ["paper_id"]
+            foreignKeyName: "repository_module_first_seen_revision_id_fkey"
+            columns: ["first_seen_revision_id"]
             isOneToOne: false
-            referencedRelation: "paper"
+            referencedRelation: "repository_revision"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "repository_implements_paper_repository_id_fkey"
+            foreignKeyName: "repository_module_last_seen_revision_id_fkey"
+            columns: ["last_seen_revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_module_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "library"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_module_repository_id_fkey"
             columns: ["repository_id"]
             isOneToOne: false
             referencedRelation: "repository"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_module_tenant_id_first_seen_revision_id_fkey"
+            columns: ["tenant_id", "first_seen_revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_module_tenant_id_last_seen_revision_id_fkey"
+            columns: ["tenant_id", "last_seen_revision_id"]
+            isOneToOne: false
+            referencedRelation: "repository_revision"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_module_tenant_id_library_id_fkey"
+            columns: ["tenant_id", "library_id"]
+            isOneToOne: false
+            referencedRelation: "library"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "repository_module_tenant_id_repository_id_fkey"
+            columns: ["tenant_id", "repository_id"]
+            isOneToOne: false
+            referencedRelation: "repository"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
-      repository_maintained_by_organization: {
+      repository_revision: {
         Row: {
+          capture_id: string | null
+          commit_sha: string
+          committed_at: string | null
           created_at: string
-          created_by_receipt_id: string | null
-          maintenance_role: string
-          organization_id: string
-          provenance_claim_id: string | null
+          file_count: number | null
+          id: string
+          languages: Json
+          manifest_truncated: boolean
+          ref_name: string | null
           repository_id: string
-          valid_from: string | null
-          valid_to: string | null
+          tenant_id: string
+          total_bytes: number | null
+          tree_manifest_artifact_id: string | null
+          tree_sha: string | null
         }
         Insert: {
+          capture_id?: string | null
+          commit_sha: string
+          committed_at?: string | null
           created_at?: string
-          created_by_receipt_id?: string | null
-          maintenance_role?: string
-          organization_id: string
-          provenance_claim_id?: string | null
+          file_count?: number | null
+          id?: string
+          languages?: Json
+          manifest_truncated?: boolean
+          ref_name?: string | null
           repository_id: string
-          valid_from?: string | null
-          valid_to?: string | null
+          tenant_id?: string
+          total_bytes?: number | null
+          tree_manifest_artifact_id?: string | null
+          tree_sha?: string | null
         }
         Update: {
+          capture_id?: string | null
+          commit_sha?: string
+          committed_at?: string | null
           created_at?: string
-          created_by_receipt_id?: string | null
-          maintenance_role?: string
-          organization_id?: string
-          provenance_claim_id?: string | null
+          file_count?: number | null
+          id?: string
+          languages?: Json
+          manifest_truncated?: boolean
+          ref_name?: string | null
           repository_id?: string
-          valid_from?: string | null
-          valid_to?: string | null
+          tenant_id?: string
+          total_bytes?: number | null
+          tree_manifest_artifact_id?: string | null
+          tree_sha?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "repository_maintained_by_organization_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organization"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "repository_maintained_by_organization_repository_id_fkey"
+            foreignKeyName: "repository_revision_repository_id_fkey"
             columns: ["repository_id"]
             isOneToOne: false
             referencedRelation: "repository"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repository_revision_tenant_id_repository_id_fkey"
+            columns: ["tenant_id", "repository_id"]
+            isOneToOne: false
+            referencedRelation: "repository"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      security_advisory: {
+        Row: {
+          advisory_id: string
+          canonical_url: string | null
+          description: string | null
+          ecosystem: string | null
+          id: string
+          kind: string
+          tenant_id: string
+        }
+        Insert: {
+          advisory_id: string
+          canonical_url?: string | null
+          description?: string | null
+          ecosystem?: string | null
+          id: string
+          kind?: string
+          tenant_id?: string
+        }
+        Update: {
+          advisory_id?: string
+          canonical_url?: string | null
+          description?: string | null
+          ecosystem?: string | null
+          id?: string
+          kind?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_advisory_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "security_advisory_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "security_advisory_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      story: {
+        Row: {
+          canonical_url: string | null
+          id: string
+          kind: string
+          published_at: string | null
+          tenant_id: string
+          title: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          id: string
+          kind?: string
+          published_at?: string | null
+          tenant_id?: string
+          title: string
+        }
+        Update: {
+          canonical_url?: string | null
+          id?: string
+          kind?: string
+          published_at?: string | null
+          tenant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "story_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       talk: {
         Row: {
           abstract: string | null
-          created_at: string
-          created_by_receipt_id: string
           delivered_on: string | null
-          event_edition: string | null
-          event_name: string | null
-          event_slug: string | null
+          duration_minutes: number | null
           id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          recording_video_id: string | null
+          kind: string
+          language: string | null
+          talk_kind: string
           tenant_id: string
           title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
           abstract?: string | null
-          created_at?: string
-          created_by_receipt_id: string
           delivered_on?: string | null
-          event_edition?: string | null
-          event_name?: string | null
-          event_slug?: string | null
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          recording_video_id?: string | null
+          duration_minutes?: number | null
+          id: string
+          kind?: string
+          language?: string | null
+          talk_kind?: string
           tenant_id?: string
           title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
           abstract?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
           delivered_on?: string | null
-          event_edition?: string | null
-          event_name?: string | null
-          event_slug?: string | null
+          duration_minutes?: number | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          recording_video_id?: string | null
+          kind?: string
+          language?: string | null
+          talk_kind?: string
           tenant_id?: string
           title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "talk_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "talk"
+            foreignKeyName: "talk_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "talk_recording_video_id_fkey"
-            columns: ["recording_video_id"]
+            foreignKeyName: "talk_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "video"
-            referencedColumns: ["id"]
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "talk_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
-      talk_explains_concept: {
+      technique: {
         Row: {
-          concept_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          depth: string
+          description: string | null
           id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          talk_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          concept_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          depth?: string
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          talk_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          concept_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          depth?: string
-          id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          talk_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "talk_explains_concept_concept_id_fkey"
-            columns: ["concept_id"]
-            isOneToOne: false
-            referencedRelation: "concept"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "talk_explains_concept_talk_id_fkey"
-            columns: ["talk_id"]
-            isOneToOne: false
-            referencedRelation: "talk"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      video: {
-        Row: {
-          channel: string | null
-          channel_external_id: string | null
-          created_at: string
-          created_by_receipt_id: string
-          duration_seconds: number | null
-          external_id: string
-          id: string
-          lifecycle_state: string
-          merged_into_id: string | null
-          platform: string
-          published_at: string | null
+          kind: string
+          technique_kind: string | null
           tenant_id: string
-          title: string
-          transcript_artifact_id: string | null
-          updated_at: string
-          updated_by_receipt_id: string | null
-          url: string | null
         }
         Insert: {
-          channel?: string | null
-          channel_external_id?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          duration_seconds?: number | null
-          external_id: string
-          id?: string
-          lifecycle_state: string
-          merged_into_id?: string | null
-          platform: string
-          published_at?: string | null
+          description?: string | null
+          id: string
+          kind?: string
+          technique_kind?: string | null
           tenant_id?: string
-          title: string
-          transcript_artifact_id?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          url?: string | null
         }
         Update: {
-          channel?: string | null
-          channel_external_id?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
-          duration_seconds?: number | null
-          external_id?: string
+          description?: string | null
           id?: string
-          lifecycle_state?: string
-          merged_into_id?: string | null
-          platform?: string
-          published_at?: string | null
+          kind?: string
+          technique_kind?: string | null
           tenant_id?: string
-          title?: string
-          transcript_artifact_id?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-          url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "video_merged_into_id_fkey"
-            columns: ["merged_into_id"]
-            isOneToOne: false
-            referencedRelation: "video"
+            foreignKeyName: "technique_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "entity"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technique_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "technique_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "entity"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
@@ -5172,7 +4603,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      import_research_starter_catalog: {
+        Args: { p_receipt: string }
+        Returns: Json
+      }
+      rebuild_entity_projections: { Args: { p_k?: number }; Returns: number }
     }
     Enums: {
       [_ in never]: never
@@ -7285,7 +6720,12 @@ export type Database = {
         | "optimize"
         | "allow"
       review_state:
-        "open" | "claimed" | "in_review" | "decided" | "escalated" | "cancelled"
+        | "open"
+        | "claimed"
+        | "in_review"
+        | "decided"
+        | "escalated"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -7293,6 +6733,111 @@ export type Database = {
   }
   evidence: {
     Tables: {
+      attribution: {
+        Row: {
+          claim_id: string | null
+          entity_id: string
+          extraction_record_id: string | null
+          id: string
+          locator_id: string | null
+          role: string
+          source_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          claim_id?: string | null
+          entity_id: string
+          extraction_record_id?: string | null
+          id?: string
+          locator_id?: string | null
+          role: string
+          source_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          claim_id?: string | null
+          entity_id?: string
+          extraction_record_id?: string | null
+          id?: string
+          locator_id?: string | null
+          role?: string
+          source_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attribution_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attribution_extraction_record_id_fkey"
+            columns: ["extraction_record_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_record"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attribution_locator_id_fkey"
+            columns: ["locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attribution_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attribution_tenant_id_claim_id_fkey"
+            columns: ["tenant_id", "claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "attribution_tenant_id_extraction_record_id_fkey"
+            columns: ["tenant_id", "extraction_record_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "attribution_tenant_id_locator_id_fkey"
+            columns: ["tenant_id", "locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "attribution_tenant_id_source_id_fkey"
+            columns: ["tenant_id", "source_id"]
+            isOneToOne: false
+            referencedRelation: "source"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      capture_method: {
+        Row: {
+          code: string
+          description: string
+        }
+        Insert: {
+          code: string
+          description: string
+        }
+        Update: {
+          code?: string
+          description?: string
+        }
+        Relationships: []
+      }
       claim: {
         Row: {
           atomized_from_id: string | null
@@ -7302,6 +6847,7 @@ export type Database = {
           created_by_receipt_id: string | null
           id: string
           producer_attempt_id: string
+          relationship_id: string | null
           statement: string
           status: Database["evidence"]["Enums"]["claim_status"]
           structured: Json | null
@@ -7317,6 +6863,7 @@ export type Database = {
           created_by_receipt_id?: string | null
           id?: string
           producer_attempt_id: string
+          relationship_id?: string | null
           statement: string
           status?: Database["evidence"]["Enums"]["claim_status"]
           structured?: Json | null
@@ -7332,6 +6879,7 @@ export type Database = {
           created_by_receipt_id?: string | null
           id?: string
           producer_attempt_id?: string
+          relationship_id?: string | null
           statement?: string
           status?: Database["evidence"]["Enums"]["claim_status"]
           structured?: Json | null
@@ -7377,148 +6925,6 @@ export type Database = {
           },
         ]
       }
-      claim_agent_skill_version: {
-        Row: {
-          agent_skill_version_id: string
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-        }
-        Insert: {
-          agent_skill_version_id: string
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Update: {
-          agent_skill_version_id?: string
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_agent_skill_version_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_ai_model_version: {
-        Row: {
-          ai_model_version_id: string
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-        }
-        Insert: {
-          ai_model_version_id: string
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Update: {
-          ai_model_version_id?: string
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_ai_model_version_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_benchmark: {
-        Row: {
-          benchmark_id: string
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-        }
-        Insert: {
-          benchmark_id: string
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Update: {
-          benchmark_id?: string
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_benchmark_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_case_study: {
-        Row: {
-          case_study_id: string
-          claim_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          case_study_id: string
-          claim_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          case_study_id?: string
-          claim_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_case_study_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_concept: {
-        Row: {
-          claim_id: string
-          concept_id: string
-          created_at: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          concept_id: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          concept_id?: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_concept_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       claim_conflict: {
         Row: {
           claim_a_id: string
@@ -7555,35 +6961,6 @@ export type Database = {
           {
             foreignKeyName: "claim_conflict_claim_b_id_fkey"
             columns: ["claim_b_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_dataset: {
-        Row: {
-          claim_id: string
-          created_at: string
-          dataset_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          dataset_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          dataset_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_dataset_claim_id_fkey"
-            columns: ["claim_id"]
             isOneToOne: false
             referencedRelation: "claim"
             referencedColumns: ["id"]
@@ -7673,7 +7050,8 @@ export type Database = {
           locator_id: string
           role: string
           support_verdict:
-            Database["evidence"]["Enums"]["support_verdict"] | null
+            | Database["evidence"]["Enums"]["support_verdict"]
+            | null
           tenant_id: string | null
           verification_contract_version: string | null
           verified_by_run_id: string | null
@@ -7686,7 +7064,8 @@ export type Database = {
           locator_id: string
           role: string
           support_verdict?:
-            Database["evidence"]["Enums"]["support_verdict"] | null
+            | Database["evidence"]["Enums"]["support_verdict"]
+            | null
           tenant_id?: string | null
           verification_contract_version?: string | null
           verified_by_run_id?: string | null
@@ -7699,7 +7078,8 @@ export type Database = {
           locator_id?: string
           role?: string
           support_verdict?:
-            Database["evidence"]["Enums"]["support_verdict"] | null
+            | Database["evidence"]["Enums"]["support_verdict"]
+            | null
           tenant_id?: string | null
           verification_contract_version?: string | null
           verified_by_run_id?: string | null
@@ -7742,349 +7122,72 @@ export type Database = {
           },
         ]
       }
-      claim_library: {
+      claim_record: {
         Row: {
           claim_id: string
-          created_at: string
-          library_id: string
-          role_in_claim: string
+          record_id: string
+          tenant_id: string
         }
         Insert: {
           claim_id: string
-          created_at?: string
-          library_id: string
-          role_in_claim?: string
+          record_id: string
+          tenant_id?: string
         }
         Update: {
           claim_id?: string
-          created_at?: string
-          library_id?: string
-          role_in_claim?: string
+          record_id?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "claim_library_claim_id_fkey"
+            foreignKeyName: "claim_record_claim_id_fkey"
             columns: ["claim_id"]
             isOneToOne: false
             referencedRelation: "claim"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "claim_record_tenant_id_claim_id_fkey"
+            columns: ["tenant_id", "claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["tenant_id", "id"]
+          },
         ]
       }
-      claim_mcp_server_version: {
+      claim_subject: {
         Row: {
           claim_id: string
-          created_at: string
-          mcp_server_version_id: string
-          role_in_claim: string
+          entity_id: string
+          role: string
+          tenant_id: string
         }
         Insert: {
           claim_id: string
-          created_at?: string
-          mcp_server_version_id: string
-          role_in_claim?: string
+          entity_id: string
+          role: string
+          tenant_id?: string
         }
         Update: {
           claim_id?: string
-          created_at?: string
-          mcp_server_version_id?: string
-          role_in_claim?: string
+          entity_id?: string
+          role?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "claim_mcp_server_version_claim_id_fkey"
+            foreignKeyName: "claim_subject_claim_id_fkey"
             columns: ["claim_id"]
             isOneToOne: false
             referencedRelation: "claim"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      claim_organization: {
-        Row: {
-          claim_id: string
-          created_at: string
-          organization_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          organization_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          organization_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "claim_organization_claim_id_fkey"
-            columns: ["claim_id"]
+            foreignKeyName: "claim_subject_tenant_id_claim_id_fkey"
+            columns: ["tenant_id", "claim_id"]
             isOneToOne: false
             referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_paper: {
-        Row: {
-          claim_id: string
-          created_at: string
-          paper_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          paper_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          paper_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_paper_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_person: {
-        Row: {
-          claim_id: string
-          created_at: string
-          person_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          person_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          person_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_person_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_product: {
-        Row: {
-          claim_id: string
-          created_at: string
-          product_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          product_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          product_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_product_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_product_version: {
-        Row: {
-          claim_id: string
-          product_version_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          product_version_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          product_version_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_product_version_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_protocol_version: {
-        Row: {
-          ai_protocol_version_id: string
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-        }
-        Insert: {
-          ai_protocol_version_id: string
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Update: {
-          ai_protocol_version_id?: string
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_protocol_version_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_repository: {
-        Row: {
-          claim_id: string
-          created_at: string
-          repository_id: string
-          role_in_claim: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          repository_id: string
-          role_in_claim?: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          repository_id?: string
-          role_in_claim?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_repository_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_talk: {
-        Row: {
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-          talk_id: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-          talk_id: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-          talk_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_talk_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_technical_record: {
-        Row: {
-          advanced_usage_pattern_id: string | null
-          benchmark_result_id: string | null
-          claim_id: string
-          compatibility_constraint_id: string | null
-          created_at: string
-          failure_mode_id: string | null
-          id: string
-          implementation_example_id: string | null
-          operational_practice_id: string | null
-          record_kind: string | null
-          role_in_claim: string
-          security_consideration_id: string | null
-          solution_pattern_id: string | null
-          technical_problem_id: string | null
-        }
-        Insert: {
-          advanced_usage_pattern_id?: string | null
-          benchmark_result_id?: string | null
-          claim_id: string
-          compatibility_constraint_id?: string | null
-          created_at?: string
-          failure_mode_id?: string | null
-          id?: string
-          implementation_example_id?: string | null
-          operational_practice_id?: string | null
-          record_kind?: string | null
-          role_in_claim?: string
-          security_consideration_id?: string | null
-          solution_pattern_id?: string | null
-          technical_problem_id?: string | null
-        }
-        Update: {
-          advanced_usage_pattern_id?: string | null
-          benchmark_result_id?: string | null
-          claim_id?: string
-          compatibility_constraint_id?: string | null
-          created_at?: string
-          failure_mode_id?: string | null
-          id?: string
-          implementation_example_id?: string | null
-          operational_practice_id?: string | null
-          record_kind?: string | null
-          role_in_claim?: string
-          security_consideration_id?: string | null
-          solution_pattern_id?: string | null
-          technical_problem_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_technical_record_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
@@ -8105,35 +7208,6 @@ export type Database = {
           description?: string
         }
         Relationships: []
-      }
-      claim_video: {
-        Row: {
-          claim_id: string
-          created_at: string
-          role_in_claim: string
-          video_id: string
-        }
-        Insert: {
-          claim_id: string
-          created_at?: string
-          role_in_claim?: string
-          video_id: string
-        }
-        Update: {
-          claim_id?: string
-          created_at?: string
-          role_in_claim?: string
-          video_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_video_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claim"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       conflict_reconciliation: {
         Row: {
@@ -8253,6 +7327,124 @@ export type Database = {
         }
         Relationships: []
       }
+      extraction_record: {
+        Row: {
+          claim_id: string | null
+          confidence: number | null
+          created_at: string
+          extraction_run_id: string
+          id: string
+          locator_id: string | null
+          payload: Json
+          record_kind: string
+          tenant_id: string
+        }
+        Insert: {
+          claim_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          extraction_run_id: string
+          id?: string
+          locator_id?: string | null
+          payload: Json
+          record_kind: string
+          tenant_id?: string
+        }
+        Update: {
+          claim_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          extraction_run_id?: string
+          id?: string
+          locator_id?: string | null
+          payload?: Json
+          record_kind?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extraction_record_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraction_record_extraction_run_id_fkey"
+            columns: ["extraction_run_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_run"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraction_record_locator_id_fkey"
+            columns: ["locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extraction_record_tenant_id_claim_id_fkey"
+            columns: ["tenant_id", "claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "extraction_record_tenant_id_extraction_run_id_fkey"
+            columns: ["tenant_id", "extraction_run_id"]
+            isOneToOne: false
+            referencedRelation: "extraction_run"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "extraction_record_tenant_id_locator_id_fkey"
+            columns: ["tenant_id", "locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      extraction_run: {
+        Row: {
+          attempt_id: string | null
+          created_at: string
+          extractor_identity: string
+          extractor_version: string
+          id: string
+          input_digest: string
+          parameters: Json
+          representation_id: string | null
+          result_artifact_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          attempt_id?: string | null
+          created_at?: string
+          extractor_identity: string
+          extractor_version: string
+          id?: string
+          input_digest: string
+          parameters?: Json
+          representation_id?: string | null
+          result_artifact_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          attempt_id?: string | null
+          created_at?: string
+          extractor_identity?: string
+          extractor_version?: string
+          id?: string
+          input_digest?: string
+          parameters?: Json
+          representation_id?: string | null
+          result_artifact_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       extraction_signature: {
         Row: {
           created_at: string
@@ -8303,6 +7495,7 @@ export type Database = {
           capture_id: string
           context_fingerprint: string | null
           created_at: string
+          end_ms: number | null
           extraction_params: Json
           extractor_name: string
           extractor_version: string
@@ -8311,13 +7504,16 @@ export type Database = {
           normalization_policy: string | null
           normalized_value: string | null
           occurrence_count: number | null
+          page_number: number | null
           representation_artifact_id: string | null
           resolution_state: string | null
           resolution_version: string | null
           selected_content_sha256: string | null
           selected_size_bytes: number | null
           selector: Json
+          selector_kind: string
           selector_sha256: string | null
+          start_ms: number | null
           tenant_id: string | null
           verification_contract_version: string | null
         }
@@ -8325,6 +7521,7 @@ export type Database = {
           capture_id: string
           context_fingerprint?: string | null
           created_at?: string
+          end_ms?: number | null
           extraction_params?: Json
           extractor_name: string
           extractor_version: string
@@ -8333,13 +7530,16 @@ export type Database = {
           normalization_policy?: string | null
           normalized_value?: string | null
           occurrence_count?: number | null
+          page_number?: number | null
           representation_artifact_id?: string | null
           resolution_state?: string | null
           resolution_version?: string | null
           selected_content_sha256?: string | null
           selected_size_bytes?: number | null
           selector: Json
+          selector_kind?: string
           selector_sha256?: string | null
+          start_ms?: number | null
           tenant_id?: string | null
           verification_contract_version?: string | null
         }
@@ -8347,6 +7547,7 @@ export type Database = {
           capture_id?: string
           context_fingerprint?: string | null
           created_at?: string
+          end_ms?: number | null
           extraction_params?: Json
           extractor_name?: string
           extractor_version?: string
@@ -8355,13 +7556,16 @@ export type Database = {
           normalization_policy?: string | null
           normalized_value?: string | null
           occurrence_count?: number | null
+          page_number?: number | null
           representation_artifact_id?: string | null
           resolution_state?: string | null
           resolution_version?: string | null
           selected_content_sha256?: string | null
           selected_size_bytes?: number | null
           selector?: Json
+          selector_kind?: string
           selector_sha256?: string | null
+          start_ms?: number | null
           tenant_id?: string | null
           verification_contract_version?: string | null
         }
@@ -8378,6 +7582,77 @@ export type Database = {
             columns: ["tenant_id", "capture_id"]
             isOneToOne: false
             referencedRelation: "source_capture"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      provider_result: {
+        Row: {
+          artifact_id: string | null
+          created_at: string
+          id: string
+          payload: Json
+          query_id: string
+          rank: number
+          snippet: string | null
+          source_id: string | null
+          tenant_id: string
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          artifact_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          query_id: string
+          rank: number
+          snippet?: string | null
+          source_id?: string | null
+          tenant_id?: string
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          artifact_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          query_id?: string
+          rank?: number
+          snippet?: string | null
+          source_id?: string | null
+          tenant_id?: string
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_result_query_id_fkey"
+            columns: ["query_id"]
+            isOneToOne: false
+            referencedRelation: "source_query"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_result_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_result_tenant_id_query_id_fkey"
+            columns: ["tenant_id", "query_id"]
+            isOneToOne: false
+            referencedRelation: "source_query"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "provider_result_tenant_id_source_id_fkey"
+            columns: ["tenant_id", "source_id"]
+            isOneToOne: false
+            referencedRelation: "source"
             referencedColumns: ["tenant_id", "id"]
           },
         ]
@@ -8444,18 +7719,114 @@ export type Database = {
         }
         Relationships: []
       }
+      search_provider: {
+        Row: {
+          code: string
+          description: string
+          provider_kind: string
+        }
+        Insert: {
+          code: string
+          description: string
+          provider_kind?: string
+        }
+        Update: {
+          code?: string
+          description?: string
+          provider_kind?: string
+        }
+        Relationships: []
+      }
+      segment_support: {
+        Row: {
+          claim_id: string
+          event_occurrence_id: string | null
+          id: string
+          k_from: number
+          k_to: number | null
+          locator_id: string
+          role: string
+          segment_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          claim_id: string
+          event_occurrence_id?: string | null
+          id?: string
+          k_from: number
+          k_to?: number | null
+          locator_id: string
+          role: string
+          segment_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          claim_id?: string
+          event_occurrence_id?: string | null
+          id?: string
+          k_from?: number
+          k_to?: number | null
+          locator_id?: string
+          role?: string
+          segment_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "segment_support_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_support_locator_id_fkey"
+            columns: ["locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_support_tenant_id_claim_id_fkey"
+            columns: ["tenant_id", "claim_id"]
+            isOneToOne: false
+            referencedRelation: "claim"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "segment_support_tenant_id_locator_id_fkey"
+            columns: ["tenant_id", "locator_id"]
+            isOneToOne: false
+            referencedRelation: "locator"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
       source: {
         Row: {
+          blocked_reason: string | null
           canonical_url: string | null
+          capture_count: number
           created_at: string
+          failure_streak: number
+          first_seen_at: string | null
+          host: string | null
           id: string
+          last_capture_id: string | null
+          last_encounter_kind: string | null
+          last_seen_at: string | null
           license_notes: string | null
           license_spdx: string | null
           logical_identity: string | null
+          next_revisit_after: string | null
           publisher: string | null
+          publisher_entity_id: string | null
+          registrable_domain: string | null
           robots_policy: string | null
           sensitivity: string
           source_class: string
+          source_kind: string | null
+          state_knowledge_seq: number | null
           tenant_id: string
           terms_url: string | null
           updated_at: string
@@ -8463,16 +7834,29 @@ export type Database = {
           verification_contract_version: string | null
         }
         Insert: {
+          blocked_reason?: string | null
           canonical_url?: string | null
+          capture_count?: number
           created_at?: string
+          failure_streak?: number
+          first_seen_at?: string | null
+          host?: string | null
           id?: string
+          last_capture_id?: string | null
+          last_encounter_kind?: string | null
+          last_seen_at?: string | null
           license_notes?: string | null
           license_spdx?: string | null
           logical_identity?: string | null
+          next_revisit_after?: string | null
           publisher?: string | null
+          publisher_entity_id?: string | null
+          registrable_domain?: string | null
           robots_policy?: string | null
           sensitivity?: string
           source_class: string
+          source_kind?: string | null
+          state_knowledge_seq?: number | null
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string
@@ -8480,23 +7864,44 @@ export type Database = {
           verification_contract_version?: string | null
         }
         Update: {
+          blocked_reason?: string | null
           canonical_url?: string | null
+          capture_count?: number
           created_at?: string
+          failure_streak?: number
+          first_seen_at?: string | null
+          host?: string | null
           id?: string
+          last_capture_id?: string | null
+          last_encounter_kind?: string | null
+          last_seen_at?: string | null
           license_notes?: string | null
           license_spdx?: string | null
           logical_identity?: string | null
+          next_revisit_after?: string | null
           publisher?: string | null
+          publisher_entity_id?: string | null
+          registrable_domain?: string | null
           robots_policy?: string | null
           sensitivity?: string
           source_class?: string
+          source_kind?: string | null
+          state_knowledge_seq?: number | null
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string
           url_pattern?: string | null
           verification_contract_version?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "source_last_capture_id_fkey"
+            columns: ["last_capture_id"]
+            isOneToOne: false
+            referencedRelation: "source_capture"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       source_capture: {
         Row: {
@@ -8552,6 +7957,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "source_capture_capture_method_fkey"
+            columns: ["capture_method"]
+            isOneToOne: false
+            referencedRelation: "capture_method"
+            referencedColumns: ["code"]
+          },
+          {
             foreignKeyName: "source_capture_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
@@ -8567,169 +7979,126 @@ export type Database = {
           },
         ]
       }
-      source_query: {
+      source_encounter: {
         Row: {
-          attempt_id: string
-          id: string
-          mission_id: string
-          provider: string
-          purpose: string
-          queried_at: string
-          query_sha256: string
-          query_text: string
-          request_parameters: Json
-          response_artifact_id: string | null
-          tenant_id: string
-          work_item_id: string
-        }
-        Insert: {
-          attempt_id: string
-          id?: string
-          mission_id: string
-          provider: string
-          purpose: string
-          queried_at?: string
-          query_sha256: string
-          query_text: string
-          request_parameters?: Json
-          response_artifact_id?: string | null
-          tenant_id?: string
-          work_item_id: string
-        }
-        Update: {
-          attempt_id?: string
-          id?: string
-          mission_id?: string
-          provider?: string
-          purpose?: string
-          queried_at?: string
-          query_sha256?: string
-          query_text?: string
-          request_parameters?: Json
-          response_artifact_id?: string | null
-          tenant_id?: string
-          work_item_id?: string
-        }
-        Relationships: []
-      }
-      source_retrieval: {
-        Row: {
-          attempt_id: string
           capture_id: string | null
+          details: Json
+          encounter_kind: string
+          encountered_at: string
           id: string
-          provider_metadata: Json
           provider_result_id: string | null
-          query_id: string | null
-          requested_url: string
-          result_rank: number | null
-          retrieval_status: string
-          retrieved_at: string
+          receipt_id: string | null
           source_id: string
           tenant_id: string
-          work_item_id: string
         }
         Insert: {
-          attempt_id: string
           capture_id?: string | null
+          details?: Json
+          encounter_kind: string
+          encountered_at?: string
           id?: string
-          provider_metadata?: Json
           provider_result_id?: string | null
-          query_id?: string | null
-          requested_url: string
-          result_rank?: number | null
-          retrieval_status: string
-          retrieved_at?: string
+          receipt_id?: string | null
           source_id: string
           tenant_id?: string
-          work_item_id: string
         }
         Update: {
-          attempt_id?: string
           capture_id?: string | null
+          details?: Json
+          encounter_kind?: string
+          encountered_at?: string
           id?: string
-          provider_metadata?: Json
           provider_result_id?: string | null
-          query_id?: string | null
-          requested_url?: string
-          result_rank?: number | null
-          retrieval_status?: string
-          retrieved_at?: string
+          receipt_id?: string | null
           source_id?: string
           tenant_id?: string
-          work_item_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "source_retrieval_capture_id_fkey"
+            foreignKeyName: "source_encounter_capture_id_fkey"
             columns: ["capture_id"]
             isOneToOne: false
             referencedRelation: "source_capture"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "source_retrieval_query_id_fkey"
-            columns: ["query_id"]
+            foreignKeyName: "source_encounter_provider_result_id_fkey"
+            columns: ["provider_result_id"]
             isOneToOne: false
-            referencedRelation: "source_query"
+            referencedRelation: "provider_result"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "source_retrieval_source_id_fkey"
+            foreignKeyName: "source_encounter_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "source"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "source_encounter_tenant_id_capture_id_fkey"
+            columns: ["tenant_id", "capture_id"]
+            isOneToOne: false
+            referencedRelation: "source_capture"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "source_encounter_tenant_id_provider_result_id_fkey"
+            columns: ["tenant_id", "provider_result_id"]
+            isOneToOne: false
+            referencedRelation: "provider_result"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "source_encounter_tenant_id_source_id_fkey"
+            columns: ["tenant_id", "source_id"]
+            isOneToOne: false
+            referencedRelation: "source"
+            referencedColumns: ["tenant_id", "id"]
+          },
         ]
       }
-      source_support: {
+      source_query: {
         Row: {
-          created_at: string
+          attempt_id: string | null
           id: string
-          locator_id: string | null
-          operation: string
-          retrieval_id: string
-          statement: string
-          support_role: string
+          parameters: Json
+          provider_code: string
+          purpose: string
+          queried_at: string
+          query_text: string
+          response_artifact_id: string | null
           tenant_id: string
-          work_item_id: string
         }
         Insert: {
-          created_at?: string
+          attempt_id?: string | null
           id?: string
-          locator_id?: string | null
-          operation: string
-          retrieval_id: string
-          statement: string
-          support_role: string
+          parameters?: Json
+          provider_code: string
+          purpose: string
+          queried_at?: string
+          query_text: string
+          response_artifact_id?: string | null
           tenant_id?: string
-          work_item_id: string
         }
         Update: {
-          created_at?: string
+          attempt_id?: string | null
           id?: string
-          locator_id?: string | null
-          operation?: string
-          retrieval_id?: string
-          statement?: string
-          support_role?: string
+          parameters?: Json
+          provider_code?: string
+          purpose?: string
+          queried_at?: string
+          query_text?: string
+          response_artifact_id?: string | null
           tenant_id?: string
-          work_item_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "source_support_locator_id_fkey"
-            columns: ["locator_id"]
+            foreignKeyName: "source_query_provider_code_fkey"
+            columns: ["provider_code"]
             isOneToOne: false
-            referencedRelation: "locator"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "source_support_retrieval_id_fkey"
-            columns: ["retrieval_id"]
-            isOneToOne: false
-            referencedRelation: "source_retrieval"
-            referencedColumns: ["id"]
+            referencedRelation: "search_provider"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -9289,6 +8658,7 @@ export type Database = {
       }
     }
     Functions: {
+      rebuild_source_state: { Args: never; Returns: number }
       verification_locator_artifacts_are_admitted: {
         Args: {
           p_capture_id: string
@@ -9300,7 +8670,11 @@ export type Database = {
     }
     Enums: {
       claim_status:
-        "proposed" | "verified" | "disputed" | "retracted" | "superseded"
+        | "proposed"
+        | "verified"
+        | "disputed"
+        | "retracted"
+        | "superseded"
       support_verdict:
         | "directly_supported"
         | "supported_with_qualification"
@@ -9326,94 +8700,47 @@ export type Database = {
     Tables: {
       advanced_usage_pattern: {
         Row: {
-          anti_pattern: boolean
-          api_surface: string | null
-          assurance_level: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          library_id: string | null
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          minimal_example_artifact_id: string | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          prerequisites: string[] | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
+          usage: string | null
         }
         Insert: {
-          anti_pattern?: boolean
-          api_surface?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id?: string | null
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          minimal_example_artifact_id?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          id: string
+          kind?: string
+          prerequisites?: string[] | null
           tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
+          usage?: string | null
         }
         Update: {
-          anti_pattern?: boolean
-          api_surface?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          library_id?: string | null
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          minimal_example_artifact_id?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          kind?: string
+          prerequisites?: string[] | null
           tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
+          usage?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "advanced_usage_pattern_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
+            foreignKeyName: "advanced_usage_pattern_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "advanced_usage_pattern_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
+            foreignKeyName: "advanced_usage_pattern_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "advanced_usage_pattern"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "advanced_usage_pattern_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
@@ -9435,848 +8762,331 @@ export type Database = {
         }
         Relationships: []
       }
-      benchmark_compares_libraries: {
-        Row: {
-          benchmark_result_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          library_id: string
-          lifecycle_state: string
-          position: number | null
-          provenance_claim_id: string | null
-          score: number | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          benchmark_result_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          position?: number | null
-          provenance_claim_id?: string | null
-          score?: number | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          benchmark_result_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          position?: number | null
-          provenance_claim_id?: string | null
-          score?: number | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "benchmark_compares_libraries_benchmark_result_id_fkey"
-            columns: ["benchmark_result_id"]
-            isOneToOne: false
-            referencedRelation: "benchmark_result"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       benchmark_result: {
         Row: {
-          assurance_level: string
-          benchmark_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
+          benchmark_run_id: string | null
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          methodology: string | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          reproduction_state: string | null
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          metric_name: string | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
+          unit: string | null
+          value: number | null
         }
         Insert: {
-          assurance_level?: string
-          benchmark_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          methodology?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          reproduction_state?: string | null
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          benchmark_run_id?: string | null
+          id: string
+          kind?: string
+          metric_name?: string | null
           tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
+          unit?: string | null
+          value?: number | null
         }
         Update: {
-          assurance_level?: string
-          benchmark_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
+          benchmark_run_id?: string | null
           id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          methodology?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          reproduction_state?: string | null
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          kind?: string
+          metric_name?: string | null
           tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
+          unit?: string | null
+          value?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "benchmark_result_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
+            foreignKeyName: "benchmark_result_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "benchmark_result_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
+            foreignKeyName: "benchmark_result_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "benchmark_result"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "benchmark_result_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       compatibility_constraint: {
         Row: {
-          assurance_level: string
-          confidence: number | null
           constraint_kind: string | null
-          created_at: string
-          created_by_receipt_id: string
+          expression: string | null
           id: string
-          machine_readable_rule: Json | null
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          assurance_level?: string
-          confidence?: number | null
           constraint_kind?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          machine_readable_rule?: Json | null
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          expression?: string | null
+          id: string
+          kind?: string
           tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          assurance_level?: string
-          confidence?: number | null
           constraint_kind?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
+          expression?: string | null
           id?: string
-          machine_readable_rule?: Json | null
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          kind?: string
           tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "compatibility_constraint_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
+            foreignKeyName: "compatibility_constraint_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "compatibility_constraint_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
+            foreignKeyName: "compatibility_constraint_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "compatibility_constraint"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "compatibility_constraint_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       failure_mode: {
         Row: {
-          assurance_level: string
-          blast_radius: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          detection: string | null
+          failure_class: string | null
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          mitigation_summary: string | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          mitigations: string | null
           tenant_id: string
-          title: string
           trigger_conditions: string | null
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          assurance_level?: string
-          blast_radius?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          detection?: string | null
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          mitigation_summary?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          failure_class?: string | null
+          id: string
+          kind?: string
+          mitigations?: string | null
           tenant_id?: string
-          title: string
           trigger_conditions?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          assurance_level?: string
-          blast_radius?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          detection?: string | null
+          failure_class?: string | null
           id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          mitigation_summary?: string | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          kind?: string
+          mitigations?: string | null
           tenant_id?: string
-          title?: string
           trigger_conditions?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "failure_mode_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "failure_mode_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
-            isOneToOne: false
-            referencedRelation: "failure_mode"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      failure_mode_affects_library_version: {
-        Row: {
-          affected_range: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          failure_mode_id: string
-          fixed_in: string | null
-          id: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          affected_range?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          failure_mode_id: string
-          fixed_in?: string | null
-          id?: string
-          library_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          affected_range?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          failure_mode_id?: string
-          fixed_in?: string | null
-          id?: string
-          library_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "failure_mode_affects_library_version_failure_mode_id_fkey"
-            columns: ["failure_mode_id"]
-            isOneToOne: false
-            referencedRelation: "failure_mode"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      failure_mode_affects_mcp_server: {
-        Row: {
-          affected_range: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          failure_mode_id: string
-          fixed_in: string | null
-          id: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          affected_range?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          failure_mode_id: string
-          fixed_in?: string | null
-          id?: string
-          lifecycle_state: string
-          mcp_server_id: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          affected_range?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          failure_mode_id?: string
-          fixed_in?: string | null
-          id?: string
-          lifecycle_state?: string
-          mcp_server_id?: string
-          provenance_claim_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "failure_mode_affects_mcp_server_failure_mode_id_fkey"
-            columns: ["failure_mode_id"]
-            isOneToOne: false
-            referencedRelation: "failure_mode"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      implementation_demonstrates_pattern: {
-        Row: {
-          advanced_usage_pattern_id: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          fidelity: string | null
-          id: string
-          implementation_example_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string | null
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          advanced_usage_pattern_id?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          fidelity?: string | null
-          id?: string
-          implementation_example_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          advanced_usage_pattern_id?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          fidelity?: string | null
-          id?: string
-          implementation_example_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string | null
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "implementation_demonstrates_patt_advanced_usage_pattern_id_fkey"
-            columns: ["advanced_usage_pattern_id"]
-            isOneToOne: false
-            referencedRelation: "advanced_usage_pattern"
+            foreignKeyName: "failure_mode_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "implementation_demonstrates_patt_implementation_example_id_fkey"
-            columns: ["implementation_example_id"]
+            foreignKeyName: "failure_mode_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "implementation_example"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
           },
           {
-            foreignKeyName: "implementation_demonstrates_pattern_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
+            foreignKeyName: "failure_mode_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
             isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       implementation_example: {
         Row: {
-          assurance_level: string
-          commit_sha: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          exec_verification_id: string | null
+          end_line: number | null
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          path: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          repository_id: string | null
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          runnable: boolean
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          repository_file_id: string | null
+          start_line: number | null
           symbol: string | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          assurance_level?: string
-          commit_sha?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          exec_verification_id?: string | null
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          path?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          repository_id?: string | null
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          runnable?: boolean
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          symbol?: string | null
-          tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Update: {
-          assurance_level?: string
-          commit_sha?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          exec_verification_id?: string | null
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          path?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          repository_id?: string | null
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          runnable?: boolean
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          symbol?: string | null
-          tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "implementation_example_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "implementation_example_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
-            isOneToOne: false
-            referencedRelation: "implementation_example"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      library_addresses_problem: {
-        Row: {
-          caveats: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          effectiveness: string | null
+          end_line?: number | null
           id: string
-          library_id: string
-          library_version_range: string | null
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          technical_problem_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          caveats?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          effectiveness?: string | null
-          id?: string
-          library_id: string
-          library_version_range?: string | null
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          technical_problem_id: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          repository_file_id?: string | null
+          start_line?: number | null
+          symbol?: string | null
+          tenant_id?: string
         }
         Update: {
-          caveats?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          effectiveness?: string | null
+          end_line?: number | null
           id?: string
-          library_id?: string
-          library_version_range?: string | null
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          technical_problem_id?: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          repository_file_id?: string | null
+          start_line?: number | null
+          symbol?: string | null
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "library_addresses_problem_technical_problem_id_fkey"
-            columns: ["technical_problem_id"]
-            isOneToOne: false
-            referencedRelation: "technical_problem"
+            foreignKeyName: "implementation_example_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "implementation_example_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "implementation_example_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       operational_practice: {
         Row: {
-          applicability: string | null
-          assurance_level: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          practice_domain: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          practice_kind: string | null
+          procedure: string | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          applicability?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          practice_domain?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          id: string
+          kind?: string
+          practice_kind?: string | null
+          procedure?: string | null
           tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          applicability?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          practice_domain?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
+          kind?: string
+          practice_kind?: string | null
+          procedure?: string | null
           tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "operational_practice_assurance_level_fkey"
+            foreignKeyName: "operational_practice_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operational_practice_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "operational_practice_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
+          },
+        ]
+      }
+      record: {
+        Row: {
+          assurance_level: string
+          created_at: string
+          created_by_receipt_id: string
+          id: string
+          kind: string
+          provenance_claim_id: string | null
+          scope: Json
+          statement: string
+          tenant_id: string
+          title: string
+        }
+        Insert: {
+          assurance_level?: string
+          created_at?: string
+          created_by_receipt_id: string
+          id?: string
+          kind: string
+          provenance_claim_id?: string | null
+          scope?: Json
+          statement: string
+          tenant_id?: string
+          title: string
+        }
+        Update: {
+          assurance_level?: string
+          created_at?: string
+          created_by_receipt_id?: string
+          id?: string
+          kind?: string
+          provenance_claim_id?: string | null
+          scope?: Json
+          statement?: string
+          tenant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "record_assurance_level_fkey"
             columns: ["assurance_level"]
             isOneToOne: false
             referencedRelation: "assurance_level"
             referencedColumns: ["code"]
           },
-          {
-            foreignKeyName: "operational_practice_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
-            isOneToOne: false
-            referencedRelation: "operational_practice"
-            referencedColumns: ["id"]
-          },
         ]
       }
-      paper_supports_solution: {
+      record_entity_link: {
         Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          paper_id: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string
-          support_strength: string | null
-          valid_from: string
-          valid_to: string | null
+          entity_id: string
+          record_id: string
+          role: string
+          tenant_id: string
         }
         Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          paper_id: string
-          provenance_claim_id?: string | null
-          solution_pattern_id: string
-          support_strength?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          entity_id: string
+          record_id: string
+          role: string
+          tenant_id?: string
         }
         Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          paper_id?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string
-          support_strength?: string | null
-          valid_from?: string
-          valid_to?: string | null
+          entity_id?: string
+          record_id?: string
+          role?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "paper_supports_solution_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
+            foreignKeyName: "record_entity_link_record_id_fkey"
+            columns: ["record_id"]
             isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      problem_solved_by_solution: {
-        Row: {
-          conditions: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string
-          technical_problem_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          conditions?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          solution_pattern_id: string
-          technical_problem_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          conditions?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string
-          technical_problem_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "problem_solved_by_solution_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
-            isOneToOne: false
-            referencedRelation: "solution_pattern"
+            referencedRelation: "record"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "problem_solved_by_solution_technical_problem_id_fkey"
-            columns: ["technical_problem_id"]
+            foreignKeyName: "record_entity_link_tenant_id_record_id_fkey"
+            columns: ["tenant_id", "record_id"]
             isOneToOne: false
-            referencedRelation: "technical_problem"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
@@ -10313,484 +9123,150 @@ export type Database = {
         }
         Relationships: []
       }
-      repository_contains_implementation: {
-        Row: {
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          id: string
-          implementation_example_id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          repository_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          implementation_example_id: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          repository_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          implementation_example_id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          repository_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "repository_contains_implementati_implementation_example_id_fkey"
-            columns: ["implementation_example_id"]
-            isOneToOne: false
-            referencedRelation: "implementation_example"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       security_consideration: {
         Row: {
-          affected_surface: string | null
-          assurance_level: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          cve_ids: string[]
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
+          kind: string
+          mitigation: string | null
           severity: string | null
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
+          threat: string | null
         }
         Insert: {
-          affected_surface?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          cve_ids?: string[]
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          severity?: string | null
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Update: {
-          affected_surface?: string | null
-          assurance_level?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          cve_ids?: string[]
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          severity?: string | null
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "security_consideration_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "security_consideration_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
-            isOneToOne: false
-            referencedRelation: "security_consideration"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      solution_applies_under_constraint: {
-        Row: {
-          compatibility_constraint_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          compatibility_constraint_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          solution_pattern_id: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          mitigation?: string | null
+          severity?: string | null
+          tenant_id?: string
+          threat?: string | null
         }
         Update: {
-          compatibility_constraint_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          mitigation?: string | null
+          severity?: string | null
+          tenant_id?: string
+          threat?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "solution_applies_under_constra_compatibility_constraint_id_fkey"
-            columns: ["compatibility_constraint_id"]
-            isOneToOne: false
-            referencedRelation: "compatibility_constraint"
+            foreignKeyName: "security_consideration_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "solution_applies_under_constraint_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
+            foreignKeyName: "security_consideration_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "security_consideration_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       solution_pattern: {
         Row: {
-          alternatives_summary: string | null
-          approach_summary: string | null
-          assurance_level: string
-          benefits: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
+          kind: string
+          mechanism: string | null
+          pattern_kind: string | null
           tenant_id: string
-          title: string
           tradeoffs: string | null
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          alternatives_summary?: string | null
-          approach_summary?: string | null
-          assurance_level?: string
-          benefits?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          tenant_id?: string
-          title: string
-          tradeoffs?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Update: {
-          alternatives_summary?: string | null
-          approach_summary?: string | null
-          assurance_level?: string
-          benefits?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          tenant_id?: string
-          title?: string
-          tradeoffs?: string | null
-          updated_at?: string
-          updated_by_receipt_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "solution_pattern_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "solution_pattern_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
-            isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      solution_uses_protocol_version: {
-        Row: {
-          ai_protocol_version_id: string
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          ai_protocol_version_id: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          solution_pattern_id: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          mechanism?: string | null
+          pattern_kind?: string | null
+          tenant_id?: string
+          tradeoffs?: string | null
         }
         Update: {
-          ai_protocol_version_id?: string
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string
-          valid_from?: string
-          valid_to?: string | null
+          kind?: string
+          mechanism?: string | null
+          pattern_kind?: string | null
+          tenant_id?: string
+          tradeoffs?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "solution_uses_protocol_version_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
-            isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      talk_explains_pattern: {
-        Row: {
-          advanced_usage_pattern_id: string | null
-          confidence: number | null
-          created_at: string
-          created_by_receipt_id: string
-          depth: string | null
-          id: string
-          lifecycle_state: string
-          provenance_claim_id: string | null
-          solution_pattern_id: string | null
-          talk_id: string
-          valid_from: string
-          valid_to: string | null
-        }
-        Insert: {
-          advanced_usage_pattern_id?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id: string
-          depth?: string | null
-          id?: string
-          lifecycle_state: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string | null
-          talk_id: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Update: {
-          advanced_usage_pattern_id?: string | null
-          confidence?: number | null
-          created_at?: string
-          created_by_receipt_id?: string
-          depth?: string | null
-          id?: string
-          lifecycle_state?: string
-          provenance_claim_id?: string | null
-          solution_pattern_id?: string | null
-          talk_id?: string
-          valid_from?: string
-          valid_to?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "talk_explains_pattern_advanced_usage_pattern_id_fkey"
-            columns: ["advanced_usage_pattern_id"]
-            isOneToOne: false
-            referencedRelation: "advanced_usage_pattern"
+            foreignKeyName: "solution_pattern_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "talk_explains_pattern_solution_pattern_id_fkey"
-            columns: ["solution_pattern_id"]
+            foreignKeyName: "solution_pattern_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "solution_pattern"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "solution_pattern_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
       technical_problem: {
         Row: {
-          assurance_level: string
-          confidence: number | null
           context_of_occurrence: string | null
-          created_at: string
-          created_by_receipt_id: string
           id: string
-          maturity: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at: string | null
+          kind: string
           problem_class: string | null
-          provenance_claim_id: string | null
-          record_schema_version: number
-          revalidation_policy_id: string | null
-          revalidation_state: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope: Json
-          statement: string
-          structured: Json | null
-          superseded_by_id: string | null
-          symptoms: string[]
+          symptoms: string[] | null
           tenant_id: string
-          title: string
-          updated_at: string
-          updated_by_receipt_id: string | null
         }
         Insert: {
-          assurance_level?: string
-          confidence?: number | null
           context_of_occurrence?: string | null
-          created_at?: string
-          created_by_receipt_id: string
-          id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
+          id: string
+          kind?: string
           problem_class?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          symptoms?: string[]
+          symptoms?: string[] | null
           tenant_id?: string
-          title: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Update: {
-          assurance_level?: string
-          confidence?: number | null
           context_of_occurrence?: string | null
-          created_at?: string
-          created_by_receipt_id?: string
           id?: string
-          maturity?: Database["knowledge"]["Enums"]["maturity"] | null
-          next_revalidation_at?: string | null
+          kind?: string
           problem_class?: string | null
-          provenance_claim_id?: string | null
-          record_schema_version?: number
-          revalidation_policy_id?: string | null
-          revalidation_state?: Database["knowledge"]["Enums"]["revalidation_state"]
-          scope?: Json
-          statement?: string
-          structured?: Json | null
-          superseded_by_id?: string | null
-          symptoms?: string[]
+          symptoms?: string[] | null
           tenant_id?: string
-          title?: string
-          updated_at?: string
-          updated_by_receipt_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "technical_problem_assurance_level_fkey"
-            columns: ["assurance_level"]
-            isOneToOne: false
-            referencedRelation: "assurance_level"
-            referencedColumns: ["code"]
+            foreignKeyName: "technical_problem_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "record"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "technical_problem_superseded_by_id_fkey"
-            columns: ["superseded_by_id"]
+            foreignKeyName: "technical_problem_tenant_id_id_fkey"
+            columns: ["tenant_id", "id"]
             isOneToOne: false
-            referencedRelation: "technical_problem"
-            referencedColumns: ["id"]
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "technical_problem_tenant_id_id_kind_fkey"
+            columns: ["tenant_id", "id", "kind"]
+            isOneToOne: false
+            referencedRelation: "record"
+            referencedColumns: ["tenant_id", "id", "kind"]
           },
         ]
       }
@@ -10804,7 +9280,12 @@ export type Database = {
     Enums: {
       maturity: "experimental" | "emerging" | "established" | "declining"
       revalidation_state:
-        "fresh" | "due" | "in_progress" | "stale" | "failed" | "retired"
+        | "fresh"
+        | "due"
+        | "in_progress"
+        | "stale"
+        | "failed"
+        | "retired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -11633,6 +10114,39 @@ export type Database = {
         }
         Relationships: []
       }
+      normalized_event_202607: {
+        Row: {
+          event_kind: string
+          id: string
+          lifecycle_phase: string | null
+          mission_id: string | null
+          occurred_at: string
+          payload: Json
+          raw_event_id: string | null
+          trace_id: string | null
+        }
+        Insert: {
+          event_kind: string
+          id?: string
+          lifecycle_phase?: string | null
+          mission_id?: string | null
+          occurred_at?: string
+          payload?: Json
+          raw_event_id?: string | null
+          trace_id?: string | null
+        }
+        Update: {
+          event_kind?: string
+          id?: string
+          lifecycle_phase?: string | null
+          mission_id?: string | null
+          occurred_at?: string
+          payload?: Json
+          raw_event_id?: string | null
+          trace_id?: string | null
+        }
+        Relationships: []
+      }
       normalized_event_202608: {
         Row: {
           event_kind: string
@@ -11864,40 +10378,34 @@ export type Database = {
         }
         Relationships: []
       }
-      normalized_event_202703: {
+      raw_event: {
         Row: {
-          event_kind: string
+          event: Json
           id: string
-          lifecycle_phase: string | null
-          mission_id: string | null
+          idempotency_key: string
           occurred_at: string
-          payload: Json
-          raw_event_id: string | null
+          stream_cursor: string | null
           trace_id: string | null
         }
         Insert: {
-          event_kind: string
+          event: Json
           id?: string
-          lifecycle_phase?: string | null
-          mission_id?: string | null
+          idempotency_key: string
           occurred_at?: string
-          payload?: Json
-          raw_event_id?: string | null
+          stream_cursor?: string | null
           trace_id?: string | null
         }
         Update: {
-          event_kind?: string
+          event?: Json
           id?: string
-          lifecycle_phase?: string | null
-          mission_id?: string | null
+          idempotency_key?: string
           occurred_at?: string
-          payload?: Json
-          raw_event_id?: string | null
+          stream_cursor?: string | null
           trace_id?: string | null
         }
         Relationships: []
       }
-      raw_event: {
+      raw_event_202607: {
         Row: {
           event: Json
           id: string
@@ -12113,34 +10621,61 @@ export type Database = {
         }
         Relationships: []
       }
-      raw_event_202703: {
+      span: {
         Row: {
-          event: Json
+          attributes: Json
+          cost_usd: number | null
+          duration_ms: number | null
+          ended_at: string | null
           id: string
-          idempotency_key: string
+          kind: string
+          name: string
           occurred_at: string
-          stream_cursor: string | null
-          trace_id: string | null
+          parent_span_id: string | null
+          span_id: string
+          started_at: string
+          status: string
+          token_input: number | null
+          token_output: number | null
+          trace_id: string
         }
         Insert: {
-          event: Json
+          attributes?: Json
+          cost_usd?: number | null
+          duration_ms?: number | null
+          ended_at?: string | null
           id?: string
-          idempotency_key: string
+          kind: string
+          name: string
           occurred_at?: string
-          stream_cursor?: string | null
-          trace_id?: string | null
+          parent_span_id?: string | null
+          span_id: string
+          started_at: string
+          status?: string
+          token_input?: number | null
+          token_output?: number | null
+          trace_id: string
         }
         Update: {
-          event?: Json
+          attributes?: Json
+          cost_usd?: number | null
+          duration_ms?: number | null
+          ended_at?: string | null
           id?: string
-          idempotency_key?: string
+          kind?: string
+          name?: string
           occurred_at?: string
-          stream_cursor?: string | null
-          trace_id?: string | null
+          parent_span_id?: string | null
+          span_id?: string
+          started_at?: string
+          status?: string
+          token_input?: number | null
+          token_output?: number | null
+          trace_id?: string
         }
         Relationships: []
       }
-      span: {
+      span_202607: {
         Row: {
           attributes: Json
           cost_usd: number | null
@@ -12519,60 +11054,6 @@ export type Database = {
         Relationships: []
       }
       span_202702: {
-        Row: {
-          attributes: Json
-          cost_usd: number | null
-          duration_ms: number | null
-          ended_at: string | null
-          id: string
-          kind: string
-          name: string
-          occurred_at: string
-          parent_span_id: string | null
-          span_id: string
-          started_at: string
-          status: string
-          token_input: number | null
-          token_output: number | null
-          trace_id: string
-        }
-        Insert: {
-          attributes?: Json
-          cost_usd?: number | null
-          duration_ms?: number | null
-          ended_at?: string | null
-          id?: string
-          kind: string
-          name: string
-          occurred_at?: string
-          parent_span_id?: string | null
-          span_id: string
-          started_at: string
-          status?: string
-          token_input?: number | null
-          token_output?: number | null
-          trace_id: string
-        }
-        Update: {
-          attributes?: Json
-          cost_usd?: number | null
-          duration_ms?: number | null
-          ended_at?: string | null
-          id?: string
-          kind?: string
-          name?: string
-          occurred_at?: string
-          parent_span_id?: string | null
-          span_id?: string
-          started_at?: string
-          status?: string
-          token_input?: number | null
-          token_output?: number | null
-          trace_id?: string
-        }
-        Relationships: []
-      }
-      span_202703: {
         Row: {
           attributes: Json
           cost_usd: number | null
@@ -13414,7 +11895,8 @@ export type Database = {
           actor: string
           causation_id: string | null
           from_status:
-            Database["orchestration"]["Enums"]["mission_status"] | null
+            | Database["orchestration"]["Enums"]["mission_status"]
+            | null
           id: string
           mission_id: string
           occurred_at: string
@@ -13426,7 +11908,8 @@ export type Database = {
           actor: string
           causation_id?: string | null
           from_status?:
-            Database["orchestration"]["Enums"]["mission_status"] | null
+            | Database["orchestration"]["Enums"]["mission_status"]
+            | null
           id?: string
           mission_id: string
           occurred_at?: string
@@ -13438,7 +11921,8 @@ export type Database = {
           actor?: string
           causation_id?: string | null
           from_status?:
-            Database["orchestration"]["Enums"]["mission_status"] | null
+            | Database["orchestration"]["Enums"]["mission_status"]
+            | null
           id?: string
           mission_id?: string
           occurred_at?: string
@@ -15051,9 +13535,17 @@ export type Database = {
     }
     Enums: {
       attempt_outcome:
-        "succeeded" | "failed" | "timeout" | "cancelled" | "rejected"
+        | "succeeded"
+        | "failed"
+        | "timeout"
+        | "cancelled"
+        | "rejected"
       bucket_class:
-        "source_captures" | "candidate" | "accepted" | "ledger" | "published"
+        | "source_captures"
+        | "candidate"
+        | "accepted"
+        | "ledger"
+        | "published"
       mission_status:
         | "created"
         | "planning"
@@ -17652,7 +16144,10 @@ export type Database = {
         | "workshop"
         | "keynote"
       research_difficulty:
-        "introductory" | "intermediate" | "advanced" | "expert"
+        | "introductory"
+        | "intermediate"
+        | "advanced"
+        | "expert"
       research_engineering_category_code:
         | "model_foundations_behavior"
         | "inference_model_systems"
@@ -17766,7 +16261,10 @@ export type Database = {
         | "other"
       research_taxonomy_status: "draft" | "active" | "retired"
       research_verification_status:
-        "verified" | "likely" | "uncertain" | "rejected"
+        | "verified"
+        | "likely"
+        | "uncertain"
+        | "rejected"
       research_video_organization_role:
         | "primary_featured_organization"
         | "implementation_owner"
@@ -17883,33 +16381,27 @@ export type Database = {
       feature_value: {
         Row: {
           computed_at: string
-          entity_id: string
-          entity_kind: string
-          feature_definition_id: string
+          feature_definition_id: string | null
           id: string
-          input_lineage: Json
-          value_jsonb: Json | null
-          value_numeric: number | null
+          subject_entity_id: string
+          tenant_id: string
+          value: number
         }
         Insert: {
           computed_at?: string
-          entity_id: string
-          entity_kind: string
-          feature_definition_id: string
+          feature_definition_id?: string | null
           id?: string
-          input_lineage?: Json
-          value_jsonb?: Json | null
-          value_numeric?: number | null
+          subject_entity_id: string
+          tenant_id?: string
+          value: number
         }
         Update: {
           computed_at?: string
-          entity_id?: string
-          entity_kind?: string
-          feature_definition_id?: string
+          feature_definition_id?: string | null
           id?: string
-          input_lineage?: Json
-          value_jsonb?: Json | null
-          value_numeric?: number | null
+          subject_entity_id?: string
+          tenant_id?: string
+          value?: number
         }
         Relationships: [
           {
@@ -18104,78 +16596,51 @@ export type Database = {
       }
       metric_definition: {
         Row: {
-          created_at: string
+          description: string | null
           id: string
-          label: string
+          name: string
           slug: string
           tenant_id: string
+          unit: string | null
         }
         Insert: {
-          created_at?: string
+          description?: string | null
           id?: string
-          label: string
+          name: string
           slug: string
           tenant_id?: string
+          unit?: string | null
         }
         Update: {
-          created_at?: string
+          description?: string | null
           id?: string
-          label?: string
+          name?: string
           slug?: string
           tenant_id?: string
+          unit?: string | null
         }
         Relationships: []
       }
       metric_definition_version: {
         Row: {
-          acquisition: string | null
-          approval_state: Database["ranking"]["Enums"]["approval_state"]
-          cadence: string | null
-          created_at: string
-          decay_policy: Json
-          gaming_risk: string | null
+          definition: Json
           id: string
-          locator_method: string | null
           metric_definition_id: string
-          missingness_policy: string | null
-          permitted_ranking_purposes: string[]
-          semantics: string
-          source_field: string | null
-          unit: string | null
+          tenant_id: string
           version: number
         }
         Insert: {
-          acquisition?: string | null
-          approval_state?: Database["ranking"]["Enums"]["approval_state"]
-          cadence?: string | null
-          created_at?: string
-          decay_policy?: Json
-          gaming_risk?: string | null
+          definition?: Json
           id?: string
-          locator_method?: string | null
           metric_definition_id: string
-          missingness_policy?: string | null
-          permitted_ranking_purposes?: string[]
-          semantics: string
-          source_field?: string | null
-          unit?: string | null
+          tenant_id?: string
           version: number
         }
         Update: {
-          acquisition?: string | null
-          approval_state?: Database["ranking"]["Enums"]["approval_state"]
-          cadence?: string | null
-          created_at?: string
-          decay_policy?: Json
-          gaming_risk?: string | null
+          definition?: Json
           id?: string
-          locator_method?: string | null
           metric_definition_id?: string
-          missingness_policy?: string | null
-          permitted_ranking_purposes?: string[]
-          semantics?: string
-          source_field?: string | null
-          unit?: string | null
+          tenant_id?: string
           version?: number
         }
         Relationships: [
@@ -18186,146 +16651,66 @@ export type Database = {
             referencedRelation: "metric_definition"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "metric_definition_version_tenant_id_metric_definition_id_fkey"
+            columns: ["tenant_id", "metric_definition_id"]
+            isOneToOne: false
+            referencedRelation: "metric_definition"
+            referencedColumns: ["tenant_id", "id"]
+          },
         ]
       }
       metric_observation: {
         Row: {
-          access_tier: string | null
-          agent_skill_id: string | null
-          ai_model_id: string | null
-          ai_model_version_id: string | null
-          benchmark_id: string | null
-          case_study_id: string | null
-          collected_at: string
-          collector_version: string | null
-          created_at: string
-          dataset_id: string | null
-          definition_version_id: string
-          dimensions: Json
-          entity_kind: string | null
+          benchmark_run_id: string | null
+          claim_id: string | null
           id: string
-          is_estimate: boolean
-          library_id: string | null
           locator_id: string | null
-          mcp_server_id: string | null
-          measurement_kind: string | null
-          observation_window: string | null
+          metric_definition_version_id: string
           observed_at: string
-          organization_id: string | null
-          paper_id: string | null
-          person_id: string | null
-          product_id: string | null
-          provenance: Json
-          quality_flags: string[]
-          raw_capture_id: string | null
-          repository_id: string | null
-          run_id: string | null
-          source_policy_version: string | null
-          talk_id: string | null
+          subject_entity_id: string
           tenant_id: string
-          unavailable_reason: string | null
-          value_jsonb: Json | null
-          value_numeric: number | null
-          value_text: string | null
-          video_id: string | null
-          visibility: string
+          unit: string | null
+          value: number
         }
         Insert: {
-          access_tier?: string | null
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_model_version_id?: string | null
-          benchmark_id?: string | null
-          case_study_id?: string | null
-          collected_at?: string
-          collector_version?: string | null
-          created_at?: string
-          dataset_id?: string | null
-          definition_version_id: string
-          dimensions?: Json
-          entity_kind?: string | null
+          benchmark_run_id?: string | null
+          claim_id?: string | null
           id?: string
-          is_estimate?: boolean
-          library_id?: string | null
           locator_id?: string | null
-          mcp_server_id?: string | null
-          measurement_kind?: string | null
-          observation_window?: string | null
+          metric_definition_version_id: string
           observed_at: string
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
-          provenance?: Json
-          quality_flags?: string[]
-          raw_capture_id?: string | null
-          repository_id?: string | null
-          run_id?: string | null
-          source_policy_version?: string | null
-          talk_id?: string | null
+          subject_entity_id: string
           tenant_id?: string
-          unavailable_reason?: string | null
-          value_jsonb?: Json | null
-          value_numeric?: number | null
-          value_text?: string | null
-          video_id?: string | null
-          visibility?: string
+          unit?: string | null
+          value: number
         }
         Update: {
-          access_tier?: string | null
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_model_version_id?: string | null
-          benchmark_id?: string | null
-          case_study_id?: string | null
-          collected_at?: string
-          collector_version?: string | null
-          created_at?: string
-          dataset_id?: string | null
-          definition_version_id?: string
-          dimensions?: Json
-          entity_kind?: string | null
+          benchmark_run_id?: string | null
+          claim_id?: string | null
           id?: string
-          is_estimate?: boolean
-          library_id?: string | null
           locator_id?: string | null
-          mcp_server_id?: string | null
-          measurement_kind?: string | null
-          observation_window?: string | null
+          metric_definition_version_id?: string
           observed_at?: string
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
-          provenance?: Json
-          quality_flags?: string[]
-          raw_capture_id?: string | null
-          repository_id?: string | null
-          run_id?: string | null
-          source_policy_version?: string | null
-          talk_id?: string | null
+          subject_entity_id?: string
           tenant_id?: string
-          unavailable_reason?: string | null
-          value_jsonb?: Json | null
-          value_numeric?: number | null
-          value_text?: string | null
-          video_id?: string | null
-          visibility?: string
+          unit?: string | null
+          value?: number
         }
         Relationships: [
           {
-            foreignKeyName: "metric_observation_definition_version_id_fkey"
-            columns: ["definition_version_id"]
+            foreignKeyName: "metric_observation_metric_definition_version_id_fkey"
+            columns: ["metric_definition_version_id"]
             isOneToOne: false
             referencedRelation: "metric_definition_version"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "metric_observation_run_fk"
-            columns: ["run_id"]
+            foreignKeyName: "metric_observation_tenant_id_metric_definition_version_id_fkey"
+            columns: ["tenant_id", "metric_definition_version_id"]
             isOneToOne: false
-            referencedRelation: "ranking_run"
-            referencedColumns: ["id"]
+            referencedRelation: "metric_definition_version"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
@@ -18393,45 +16778,36 @@ export type Database = {
       }
       ranking_result: {
         Row: {
-          contributions: Json
-          entity_id: string
-          entity_kind: string
-          explanation: string | null
+          explanation: Json
           id: string
-          penalties: Json
           rank: number
-          run_id: string
-          score: number
-          uncertainty: number | null
+          ranking_run_id: string | null
+          score: number | null
+          subject_entity_id: string
+          tenant_id: string
         }
         Insert: {
-          contributions?: Json
-          entity_id: string
-          entity_kind: string
-          explanation?: string | null
+          explanation?: Json
           id?: string
-          penalties?: Json
           rank: number
-          run_id: string
-          score: number
-          uncertainty?: number | null
+          ranking_run_id?: string | null
+          score?: number | null
+          subject_entity_id: string
+          tenant_id?: string
         }
         Update: {
-          contributions?: Json
-          entity_id?: string
-          entity_kind?: string
-          explanation?: string | null
+          explanation?: Json
           id?: string
-          penalties?: Json
           rank?: number
-          run_id?: string
-          score?: number
-          uncertainty?: number | null
+          ranking_run_id?: string | null
+          score?: number | null
+          subject_entity_id?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ranking_result_run_id_fkey"
-            columns: ["run_id"]
+            foreignKeyName: "ranking_result_ranking_run_id_fkey"
+            columns: ["ranking_run_id"]
             isOneToOne: false
             referencedRelation: "ranking_run"
             referencedColumns: ["id"]
@@ -18533,7 +16909,11 @@ export type Database = {
     }
     Enums: {
       approval_state:
-        "draft" | "proposed" | "approved" | "deprecated" | "rejected"
+        | "draft"
+        | "proposed"
+        | "approved"
+        | "deprecated"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -18815,7 +17195,11 @@ export type Database = {
     Enums: {
       bundle_status: "assembling" | "complete" | "failed" | "superseded"
       finding_resolution:
-        "pending" | "promoted" | "rejected" | "deferred" | "merged"
+        | "pending"
+        | "promoted"
+        | "rejected"
+        | "deferred"
+        | "merged"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -19064,126 +17448,38 @@ export type Database = {
           },
         ]
       }
-      chunk_citation_link: {
-        Row: {
-          chunk_id: string
-          citation_document_id: string | null
-          citation_marker: string
-          citation_source_id: string | null
-          created_at: string
-          id: string
-          resolution_state: string
-          tenant_id: string
-        }
-        Insert: {
-          chunk_id: string
-          citation_document_id?: string | null
-          citation_marker: string
-          citation_source_id?: string | null
-          created_at?: string
-          id?: string
-          resolution_state: string
-          tenant_id?: string
-        }
-        Update: {
-          chunk_id?: string
-          citation_document_id?: string | null
-          citation_marker?: string
-          citation_source_id?: string | null
-          created_at?: string
-          id?: string
-          resolution_state?: string
-          tenant_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chunk_citation_link_tenant_id_chunk_id_fkey"
-            columns: ["tenant_id", "chunk_id"]
-            isOneToOne: false
-            referencedRelation: "retrieval_chunk"
-            referencedColumns: ["tenant_id", "id"]
-          },
-        ]
-      }
       chunk_claim_link: {
         Row: {
           chunk_id: string
           claim_id: string
-          created_at: string
-          semantic_role: string
           tenant_id: string
+          verb: string
         }
         Insert: {
           chunk_id: string
           claim_id: string
-          created_at?: string
-          semantic_role: string
           tenant_id?: string
+          verb: string
         }
         Update: {
           chunk_id?: string
           claim_id?: string
-          created_at?: string
-          semantic_role?: string
           tenant_id?: string
+          verb?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "chunk_claim_link_chunk_id_fkey"
+            columns: ["chunk_id"]
+            isOneToOne: false
+            referencedRelation: "retrieval_chunk"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chunk_claim_link_tenant_id_chunk_id_fkey"
             columns: ["tenant_id", "chunk_id"]
             isOneToOne: false
             referencedRelation: "retrieval_chunk"
-            referencedColumns: ["tenant_id", "id"]
-          },
-        ]
-      }
-      chunk_concept_link: {
-        Row: {
-          chunk_id: string
-          concept_target_id: string
-          confidence: number | null
-          created_at: string
-          id: string
-          method: string
-          role: string
-          tenant_id: string
-          verification_state: string
-        }
-        Insert: {
-          chunk_id: string
-          concept_target_id: string
-          confidence?: number | null
-          created_at?: string
-          id?: string
-          method: string
-          role: string
-          tenant_id?: string
-          verification_state?: string
-        }
-        Update: {
-          chunk_id?: string
-          concept_target_id?: string
-          confidence?: number | null
-          created_at?: string
-          id?: string
-          method?: string
-          role?: string
-          tenant_id?: string
-          verification_state?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chunk_concept_link_tenant_id_chunk_id_fkey"
-            columns: ["tenant_id", "chunk_id"]
-            isOneToOne: false
-            referencedRelation: "retrieval_chunk"
-            referencedColumns: ["tenant_id", "id"]
-          },
-          {
-            foreignKeyName: "chunk_concept_link_tenant_id_concept_target_id_fkey"
-            columns: ["tenant_id", "concept_target_id"]
-            isOneToOne: false
-            referencedRelation: "projection_target"
             referencedColumns: ["tenant_id", "id"]
           },
         ]
@@ -19234,46 +17530,35 @@ export type Database = {
         Row: {
           chunk_id: string
           confidence: number | null
-          created_at: string
-          document_node_id: string | null
-          end_offset: number | null
-          entity_target_id: string
-          id: string
-          mention_role: string
+          entity_id: string
           method: string
-          start_offset: number | null
           tenant_id: string
-          verification_state: string
+          verb: string
         }
         Insert: {
           chunk_id: string
           confidence?: number | null
-          created_at?: string
-          document_node_id?: string | null
-          end_offset?: number | null
-          entity_target_id: string
-          id?: string
-          mention_role: string
+          entity_id: string
           method: string
-          start_offset?: number | null
           tenant_id?: string
-          verification_state?: string
+          verb: string
         }
         Update: {
           chunk_id?: string
           confidence?: number | null
-          created_at?: string
-          document_node_id?: string | null
-          end_offset?: number | null
-          entity_target_id?: string
-          id?: string
-          mention_role?: string
+          entity_id?: string
           method?: string
-          start_offset?: number | null
           tenant_id?: string
-          verification_state?: string
+          verb?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "chunk_entity_mention_chunk_id_fkey"
+            columns: ["chunk_id"]
+            isOneToOne: false
+            referencedRelation: "retrieval_chunk"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chunk_entity_mention_tenant_id_chunk_id_fkey"
             columns: ["tenant_id", "chunk_id"]
@@ -19281,59 +17566,40 @@ export type Database = {
             referencedRelation: "retrieval_chunk"
             referencedColumns: ["tenant_id", "id"]
           },
-          {
-            foreignKeyName: "chunk_entity_mention_tenant_id_entity_target_id_fkey"
-            columns: ["tenant_id", "entity_target_id"]
-            isOneToOne: false
-            referencedRelation: "projection_target"
-            referencedColumns: ["tenant_id", "id"]
-          },
         ]
       }
       chunk_relationship_evidence: {
         Row: {
           chunk_id: string
-          created_at: string
-          evidence_role: string
-          id: string
-          relationship_target_id: string
-          support_strength: number | null
+          relationship_id: string
           tenant_id: string
-          verification_decision_id: string | null
+          verb: string
         }
         Insert: {
           chunk_id: string
-          created_at?: string
-          evidence_role: string
-          id?: string
-          relationship_target_id: string
-          support_strength?: number | null
+          relationship_id: string
           tenant_id?: string
-          verification_decision_id?: string | null
+          verb: string
         }
         Update: {
           chunk_id?: string
-          created_at?: string
-          evidence_role?: string
-          id?: string
-          relationship_target_id?: string
-          support_strength?: number | null
+          relationship_id?: string
           tenant_id?: string
-          verification_decision_id?: string | null
+          verb?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "chunk_relationship_evidence_chunk_id_fkey"
+            columns: ["chunk_id"]
+            isOneToOne: false
+            referencedRelation: "retrieval_chunk"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chunk_relationship_evidence_tenant_id_chunk_id_fkey"
             columns: ["tenant_id", "chunk_id"]
             isOneToOne: false
             referencedRelation: "retrieval_chunk"
-            referencedColumns: ["tenant_id", "id"]
-          },
-          {
-            foreignKeyName: "chunk_relationship_evidence_tenant_id_relationship_target__fkey"
-            columns: ["tenant_id", "relationship_target_id"]
-            isOneToOne: false
-            referencedRelation: "projection_target"
             referencedColumns: ["tenant_id", "id"]
           },
         ]
@@ -19457,10 +17723,14 @@ export type Database = {
           defaults: Json
           id: string
           limits: Json
+          overlap_tokens: number | null
+          respect_boundaries: boolean
           schema_contract: Json
           slug: string
           status: string
+          strategy: string | null
           supported_content_classes: Json
+          target_tokens: number | null
           tenant_id: string
           tokenizer: string
           version: string
@@ -19473,10 +17743,14 @@ export type Database = {
           defaults?: Json
           id?: string
           limits?: Json
+          overlap_tokens?: number | null
+          respect_boundaries?: boolean
           schema_contract: Json
           slug: string
           status: string
+          strategy?: string | null
           supported_content_classes: Json
+          target_tokens?: number | null
           tenant_id?: string
           tokenizer: string
           version: string
@@ -19489,10 +17763,14 @@ export type Database = {
           defaults?: Json
           id?: string
           limits?: Json
+          overlap_tokens?: number | null
+          respect_boundaries?: boolean
           schema_contract?: Json
           slug?: string
           status?: string
+          strategy?: string | null
           supported_content_classes?: Json
+          target_tokens?: number | null
           tenant_id?: string
           tokenizer?: string
           version?: string
@@ -20034,38 +18312,56 @@ export type Database = {
       projection_target: {
         Row: {
           admitted_at: string
-          canonical_record_id: string
-          canonical_table: unknown
-          eligibility_validator: unknown
+          chunk_id: string | null
+          claim_id: string | null
+          entity_id: string | null
           id: string
+          record_id: string | null
           retired_at: string | null
-          schema_version: number
+          summary_id: string | null
           target_kind: string
           tenant_id: string
         }
         Insert: {
           admitted_at?: string
-          canonical_record_id: string
-          canonical_table: unknown
-          eligibility_validator: unknown
+          chunk_id?: string | null
+          claim_id?: string | null
+          entity_id?: string | null
           id?: string
+          record_id?: string | null
           retired_at?: string | null
-          schema_version: number
+          summary_id?: string | null
           target_kind: string
           tenant_id?: string
         }
         Update: {
           admitted_at?: string
-          canonical_record_id?: string
-          canonical_table?: unknown
-          eligibility_validator?: unknown
+          chunk_id?: string | null
+          claim_id?: string | null
+          entity_id?: string | null
           id?: string
+          record_id?: string | null
           retired_at?: string | null
-          schema_version?: number
+          summary_id?: string | null
           target_kind?: string
           tenant_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projection_target_chunk_id_fkey"
+            columns: ["chunk_id"]
+            isOneToOne: false
+            referencedRelation: "retrieval_chunk"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projection_target_tenant_id_chunk_id_fkey"
+            columns: ["tenant_id", "chunk_id"]
+            isOneToOne: false
+            referencedRelation: "retrieval_chunk"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
       }
       publication_switch_receipt: {
         Row: {
@@ -20725,123 +19021,111 @@ export type Database = {
       }
       vector_item: {
         Row: {
-          advanced_usage_pattern_id: string | null
+          assurance_rank: number | null
           authority_level: string | null
           backend_location: string | null
-          benchmark_result_id: string | null
           chunk_index: number
-          claim_id: string | null
           classification: string | null
-          compatibility_constraint_id: string | null
+          content_kind: string
           content_sha256: string
           created_at: string
-          embedding: string | null
+          document_type_code: string | null
           embedding_item_id: string | null
-          failure_mode_id: string | null
+          end_ms: number | null
+          entity_id: string | null
+          entity_kind: string | null
           freshness_at: string | null
           generation_run_id: string | null
           id: string
-          implementation_example_id: string | null
+          knowledge_seq: number | null
           language: string | null
           lifecycle: string
-          operational_practice_id: string | null
+          projection_target_id: string | null
           receipt_id: string | null
-          report_version_id: string | null
           retrieval_chunk_id: string | null
           search_projection_id: string | null
           search_text: string | null
           search_tsv: unknown
-          security_consideration_id: string | null
-          solution_pattern_id: string | null
-          source_kind: string | null
+          secondary_entity_ids: string[]
           source_version_hash: string | null
           space_version_id: string
+          start_ms: number | null
           superseded_by_id: string | null
-          talk_id: string | null
-          technical_problem_id: string | null
           tenant_id: string
+          valid_during: unknown
           verification_state: string
-          video_id: string | null
           visibility: string | null
         }
         Insert: {
-          advanced_usage_pattern_id?: string | null
+          assurance_rank?: number | null
           authority_level?: string | null
           backend_location?: string | null
-          benchmark_result_id?: string | null
           chunk_index?: number
-          claim_id?: string | null
           classification?: string | null
-          compatibility_constraint_id?: string | null
+          content_kind?: string
           content_sha256: string
           created_at?: string
-          embedding?: string | null
+          document_type_code?: string | null
           embedding_item_id?: string | null
-          failure_mode_id?: string | null
+          end_ms?: number | null
+          entity_id?: string | null
+          entity_kind?: string | null
           freshness_at?: string | null
           generation_run_id?: string | null
           id?: string
-          implementation_example_id?: string | null
+          knowledge_seq?: number | null
           language?: string | null
           lifecycle?: string
-          operational_practice_id?: string | null
+          projection_target_id?: string | null
           receipt_id?: string | null
-          report_version_id?: string | null
           retrieval_chunk_id?: string | null
           search_projection_id?: string | null
           search_text?: string | null
           search_tsv?: unknown
-          security_consideration_id?: string | null
-          solution_pattern_id?: string | null
-          source_kind?: string | null
+          secondary_entity_ids?: string[]
           source_version_hash?: string | null
           space_version_id: string
+          start_ms?: number | null
           superseded_by_id?: string | null
-          talk_id?: string | null
-          technical_problem_id?: string | null
           tenant_id?: string
+          valid_during?: unknown
           verification_state?: string
-          video_id?: string | null
           visibility?: string | null
         }
         Update: {
-          advanced_usage_pattern_id?: string | null
+          assurance_rank?: number | null
           authority_level?: string | null
           backend_location?: string | null
-          benchmark_result_id?: string | null
           chunk_index?: number
-          claim_id?: string | null
           classification?: string | null
-          compatibility_constraint_id?: string | null
+          content_kind?: string
           content_sha256?: string
           created_at?: string
-          embedding?: string | null
+          document_type_code?: string | null
           embedding_item_id?: string | null
-          failure_mode_id?: string | null
+          end_ms?: number | null
+          entity_id?: string | null
+          entity_kind?: string | null
           freshness_at?: string | null
           generation_run_id?: string | null
           id?: string
-          implementation_example_id?: string | null
+          knowledge_seq?: number | null
           language?: string | null
           lifecycle?: string
-          operational_practice_id?: string | null
+          projection_target_id?: string | null
           receipt_id?: string | null
-          report_version_id?: string | null
           retrieval_chunk_id?: string | null
           search_projection_id?: string | null
           search_text?: string | null
           search_tsv?: unknown
-          security_consideration_id?: string | null
-          solution_pattern_id?: string | null
-          source_kind?: string | null
+          secondary_entity_ids?: string[]
           source_version_hash?: string | null
           space_version_id?: string
+          start_ms?: number | null
           superseded_by_id?: string | null
-          talk_id?: string | null
-          technical_problem_id?: string | null
           tenant_id?: string
+          valid_during?: unknown
           verification_state?: string
-          video_id?: string | null
           visibility?: string | null
         }
         Relationships: [
@@ -20858,6 +19142,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "search_projection"
             referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "vector_item_projection_target_id_fkey"
+            columns: ["projection_target_id"]
+            isOneToOne: false
+            referencedRelation: "projection_target"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "vector_item_retrieval_chunk_fk"
@@ -20944,7 +19235,337 @@ export type Database = {
           },
         ]
       }
-      vector_item_embedding_1536_default: {
+      vector_item_embedding_1536_benchmark_intelligence: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_document_summaries: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_engineering_claims: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_entity_profiles: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_entity_timeline: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_implementation_examples: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_market_intelligence: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_model_capabilities: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_paper_case_study_knowledge: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_source_native_sections: {
+        Row: {
+          created_at: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: unknown
+          embedding_sha256: string
+          physical_embedding_sha256?: string | null
+          tenant_id: string
+          vector_item_id: string
+          vector_space_key: string
+          vector_space_version_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: unknown
+          embedding_sha256?: string
+          physical_embedding_sha256?: string | null
+          tenant_id?: string
+          vector_item_id?: string
+          vector_space_key?: string
+          vector_space_version_id?: string
+        }
+        Relationships: []
+      }
+      vector_item_embedding_1536_tool_capabilities: {
         Row: {
           created_at: string
           embedding: unknown
@@ -21394,6 +20015,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      project_entity_timeline: { Args: { p_k?: number }; Returns: number }
       publish_vector_space: {
         Args: {
           p_actor_identity: string
@@ -21443,856 +20065,58 @@ export type Database = {
     Tables: {
       candidate: {
         Row: {
-          candidate_kind: string
-          capture_id: string | null
           created_at: string
-          discovered_by_attempt_id: string | null
-          discovery_method: string | null
           id: string
-          locator_id: string | null
-          mission_id: string | null
-          provider: string | null
-          raw: Json
-          status: Database["staging"]["Enums"]["candidate_status"]
+          proposed_kind: string
+          proposed_payload: Json
+          resolved_entity_id: string | null
+          source_id: string | null
           tenant_id: string
-          updated_at: string
         }
         Insert: {
-          candidate_kind: string
-          capture_id?: string | null
           created_at?: string
-          discovered_by_attempt_id?: string | null
-          discovery_method?: string | null
           id?: string
-          locator_id?: string | null
-          mission_id?: string | null
-          provider?: string | null
-          raw?: Json
-          status?: Database["staging"]["Enums"]["candidate_status"]
+          proposed_kind: string
+          proposed_payload: Json
+          resolved_entity_id?: string | null
+          source_id?: string | null
           tenant_id?: string
-          updated_at?: string
         }
         Update: {
-          candidate_kind?: string
-          capture_id?: string | null
           created_at?: string
-          discovered_by_attempt_id?: string | null
-          discovery_method?: string | null
           id?: string
-          locator_id?: string | null
-          mission_id?: string | null
-          provider?: string | null
-          raw?: Json
-          status?: Database["staging"]["Enums"]["candidate_status"]
+          proposed_kind?: string
+          proposed_payload?: Json
+          resolved_entity_id?: string | null
+          source_id?: string | null
           tenant_id?: string
-          updated_at?: string
         }
         Relationships: []
       }
-      candidate_agent_skill: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          distribution: string | null
-          name: string | null
-          repository_url: string | null
-          skill_format: string | null
-          slug: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          distribution?: string | null
-          name?: string | null
-          repository_url?: string | null
-          skill_format?: string | null
-          slug?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          distribution?: string | null
-          name?: string | null
-          repository_url?: string | null
-          skill_format?: string | null
-          slug?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_agent_skill_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_agent_skill_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_ai_model: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          display_name: string | null
-          family: string | null
-          model_slug: string | null
-          provider_name: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          display_name?: string | null
-          family?: string | null
-          model_slug?: string | null
-          provider_name?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          display_name?: string | null
-          family?: string | null
-          model_slug?: string | null
-          provider_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_ai_model_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_ai_model_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_ai_protocol: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          name: string | null
-          slug: string | null
-          spec_url: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          name?: string | null
-          slug?: string | null
-          spec_url?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          name?: string | null
-          slug?: string | null
-          spec_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_ai_protocol_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_ai_protocol_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_benchmark: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          homepage_url: string | null
-          name: string | null
-          task_domain: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          homepage_url?: string | null
-          name?: string | null
-          task_domain?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          homepage_url?: string | null
-          name?: string | null
-          task_domain?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_benchmark_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_benchmark_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_case_study: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          organization_name: string | null
-          product_name: string | null
-          published_on: string | null
-          slug: string | null
-          source_url: string | null
-          title: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          organization_name?: string | null
-          product_name?: string | null
-          published_on?: string | null
-          slug?: string | null
-          source_url?: string | null
-          title?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          organization_name?: string | null
-          product_name?: string | null
-          published_on?: string | null
-          slug?: string | null
-          source_url?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_case_study_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_case_study_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_concept: {
-        Row: {
-          aliases: string[]
-          candidate_id: string
-          candidate_kind: string
-          definition: string | null
-          preferred_label: string | null
-        }
-        Insert: {
-          aliases?: string[]
-          candidate_id: string
-          candidate_kind?: string
-          definition?: string | null
-          preferred_label?: string | null
-        }
-        Update: {
-          aliases?: string[]
-          candidate_id?: string
-          candidate_kind?: string
-          definition?: string | null
-          preferred_label?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_concept_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_concept_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_dataset: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          external_id: string | null
-          host: string | null
-          name: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          external_id?: string | null
-          host?: string | null
-          name?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          external_id?: string | null
-          host?: string | null
-          name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_dataset_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_dataset_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_library: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          display_name: string | null
-          ecosystem: string | null
-          homepage_url: string | null
-          package_name: string | null
-          primary_language: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          display_name?: string | null
-          ecosystem?: string | null
-          homepage_url?: string | null
-          package_name?: string | null
-          primary_language?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          display_name?: string | null
-          ecosystem?: string | null
-          homepage_url?: string | null
-          package_name?: string | null
-          primary_language?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_library_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_library_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_mcp_server: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          ecosystem: string | null
-          name: string | null
-          package_name: string | null
-          registry_id: string | null
-          repository_url: string | null
-          transport_kinds: string[]
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          ecosystem?: string | null
-          name?: string | null
-          package_name?: string | null
-          registry_id?: string | null
-          repository_url?: string | null
-          transport_kinds?: string[]
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          ecosystem?: string | null
-          name?: string | null
-          package_name?: string | null
-          registry_id?: string | null
-          repository_url?: string | null
-          transport_kinds?: string[]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_mcp_server_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_mcp_server_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_organization: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          display_name: string | null
-          identifiers: Json
-          legal_name: string | null
-          website_url: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          display_name?: string | null
-          identifiers?: Json
-          legal_name?: string | null
-          website_url?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          display_name?: string | null
-          identifiers?: Json
-          legal_name?: string | null
-          website_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_organization_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_organization_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_paper: {
-        Row: {
-          arxiv_id: string | null
-          candidate_id: string
-          candidate_kind: string
-          doi: string | null
-          openreview_id: string | null
-          published_on: string | null
-          title: string | null
-        }
-        Insert: {
-          arxiv_id?: string | null
-          candidate_id: string
-          candidate_kind?: string
-          doi?: string | null
-          openreview_id?: string | null
-          published_on?: string | null
-          title?: string | null
-        }
-        Update: {
-          arxiv_id?: string | null
-          candidate_id?: string
-          candidate_kind?: string
-          doi?: string | null
-          openreview_id?: string | null
-          published_on?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_paper_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_paper_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_person: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          display_name: string | null
-          family_name: string | null
-          given_name: string | null
-          headline: string | null
-          identifiers: Json
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          display_name?: string | null
-          family_name?: string | null
-          given_name?: string | null
-          headline?: string | null
-          identifiers?: Json
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          display_name?: string | null
-          family_name?: string | null
-          given_name?: string | null
-          headline?: string | null
-          identifiers?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_person_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_person_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_product: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          display_name: string | null
-          homepage_url: string | null
-          vendor_name: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          display_name?: string | null
-          homepage_url?: string | null
-          vendor_name?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          display_name?: string | null
-          homepage_url?: string | null
-          vendor_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_product_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_product_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_repository: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          host: string | null
-          name: string | null
-          owner: string | null
-          primary_language: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          host?: string | null
-          name?: string | null
-          owner?: string | null
-          primary_language?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          host?: string | null
-          name?: string | null
-          owner?: string | null
-          primary_language?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_repository_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_repository_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_talk: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          delivered_on: string | null
-          event_name: string | null
-          event_slug: string | null
-          title: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          delivered_on?: string | null
-          event_name?: string | null
-          event_slug?: string | null
-          title?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          delivered_on?: string | null
-          event_name?: string | null
-          event_slug?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_talk_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_talk_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_technical_record: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          record_kind: string
-          scope: Json
-          statement: string | null
-          structured: Json | null
-          title: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          record_kind: string
-          scope?: Json
-          statement?: string | null
-          structured?: Json | null
-          title?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          record_kind?: string
-          scope?: Json
-          statement?: string | null
-          structured?: Json | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_technical_record_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_technical_record_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_video: {
-        Row: {
-          candidate_id: string
-          candidate_kind: string
-          channel: string | null
-          external_id: string | null
-          platform: string | null
-          published_at: string | null
-          title: string | null
-        }
-        Insert: {
-          candidate_id: string
-          candidate_kind?: string
-          channel?: string | null
-          external_id?: string | null
-          platform?: string | null
-          published_at?: string | null
-          title?: string | null
-        }
-        Update: {
-          candidate_id?: string
-          candidate_kind?: string
-          channel?: string | null
-          external_id?: string | null
-          platform?: string | null
-          published_at?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_video_candidate_id_candidate_kind_fkey"
-            columns: ["candidate_id", "candidate_kind"]
-            isOneToOne: false
-            referencedRelation: "candidate"
-            referencedColumns: ["id", "candidate_kind"]
-          },
-          {
-            foreignKeyName: "candidate_video_candidate_id_fkey"
-            columns: ["candidate_id"]
-            isOneToOne: true
-            referencedRelation: "candidate"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       identity_match: {
         Row: {
-          agent_skill_id: string | null
-          ai_model_id: string | null
-          ai_protocol_id: string | null
-          benchmark_id: string | null
           candidate_id: string
-          case_study_id: string | null
-          concept_id: string | null
-          created_at: string
-          dataset_id: string | null
-          decided: boolean
+          confidence: number
+          entity_id: string
           id: string
-          library_id: string | null
-          match_method: string
-          mcp_server_id: string | null
-          organization_id: string | null
-          paper_id: string | null
-          person_id: string | null
-          product_id: string | null
-          repository_id: string | null
-          score: number | null
-          talk_id: string | null
-          target_kind: string | null
-          video_id: string | null
+          method: string
+          tenant_id: string
         }
         Insert: {
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_protocol_id?: string | null
-          benchmark_id?: string | null
           candidate_id: string
-          case_study_id?: string | null
-          concept_id?: string | null
-          created_at?: string
-          dataset_id?: string | null
-          decided?: boolean
+          confidence: number
+          entity_id: string
           id?: string
-          library_id?: string | null
-          match_method: string
-          mcp_server_id?: string | null
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
-          repository_id?: string | null
-          score?: number | null
-          talk_id?: string | null
-          target_kind?: string | null
-          video_id?: string | null
+          method: string
+          tenant_id?: string
         }
         Update: {
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_protocol_id?: string | null
-          benchmark_id?: string | null
           candidate_id?: string
-          case_study_id?: string | null
-          concept_id?: string | null
-          created_at?: string
-          dataset_id?: string | null
-          decided?: boolean
+          confidence?: number
+          entity_id?: string
           id?: string
-          library_id?: string | null
-          match_method?: string
-          mcp_server_id?: string | null
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
-          repository_id?: string | null
-          score?: number | null
-          talk_id?: string | null
-          target_kind?: string | null
-          video_id?: string | null
+          method?: string
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -22302,73 +20126,42 @@ export type Database = {
             referencedRelation: "candidate"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      mention: {
-        Row: {
-          appeared_in_capture_id: string
-          candidate_id: string
-          created_at: string
-          id: string
-          snippet_locator_id: string | null
-          surface_form: string | null
-        }
-        Insert: {
-          appeared_in_capture_id: string
-          candidate_id: string
-          created_at?: string
-          id?: string
-          snippet_locator_id?: string | null
-          surface_form?: string | null
-        }
-        Update: {
-          appeared_in_capture_id?: string
-          candidate_id?: string
-          created_at?: string
-          id?: string
-          snippet_locator_id?: string | null
-          surface_form?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "mention_candidate_id_fkey"
-            columns: ["candidate_id"]
+            foreignKeyName: "identity_match_tenant_id_candidate_id_fkey"
+            columns: ["tenant_id", "candidate_id"]
             isOneToOne: false
             referencedRelation: "candidate"
-            referencedColumns: ["id"]
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       resolution_decision: {
         Row: {
           candidate_id: string
-          decided_at: string
-          decided_by_attempt_id: string | null
+          created_at: string
+          decision: string
+          entity_id: string | null
           id: string
-          identity_match_id: string | null
-          intent_id: string | null
-          outcome: Database["staging"]["Enums"]["resolution_outcome"]
-          rationale: string | null
+          receipt_id: string
+          tenant_id: string
         }
         Insert: {
           candidate_id: string
-          decided_at?: string
-          decided_by_attempt_id?: string | null
+          created_at?: string
+          decision: string
+          entity_id?: string | null
           id?: string
-          identity_match_id?: string | null
-          intent_id?: string | null
-          outcome: Database["staging"]["Enums"]["resolution_outcome"]
-          rationale?: string | null
+          receipt_id: string
+          tenant_id?: string
         }
         Update: {
           candidate_id?: string
-          decided_at?: string
-          decided_by_attempt_id?: string | null
+          created_at?: string
+          decision?: string
+          entity_id?: string | null
           id?: string
-          identity_match_id?: string | null
-          intent_id?: string | null
-          outcome?: Database["staging"]["Enums"]["resolution_outcome"]
-          rationale?: string | null
+          receipt_id?: string
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -22379,41 +20172,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "resolution_decision_identity_match_id_fkey"
-            columns: ["identity_match_id"]
+            foreignKeyName: "resolution_decision_tenant_id_candidate_id_fkey"
+            columns: ["tenant_id", "candidate_id"]
             isOneToOne: false
-            referencedRelation: "identity_match"
-            referencedColumns: ["id"]
+            referencedRelation: "candidate"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
       vetting_decision: {
         Row: {
           candidate_id: string
-          decided_at: string
-          decided_by_attempt_id: string | null
+          created_at: string
+          decision: string
           id: string
-          outcome: Database["staging"]["Enums"]["vetting_outcome"]
-          rationale: string
-          review_task_id: string | null
+          reason: string
+          receipt_id: string
+          tenant_id: string
         }
         Insert: {
           candidate_id: string
-          decided_at?: string
-          decided_by_attempt_id?: string | null
+          created_at?: string
+          decision: string
           id?: string
-          outcome: Database["staging"]["Enums"]["vetting_outcome"]
-          rationale: string
-          review_task_id?: string | null
+          reason: string
+          receipt_id: string
+          tenant_id?: string
         }
         Update: {
           candidate_id?: string
-          decided_at?: string
-          decided_by_attempt_id?: string | null
+          created_at?: string
+          decision?: string
           id?: string
-          outcome?: Database["staging"]["Enums"]["vetting_outcome"]
-          rationale?: string
-          review_task_id?: string | null
+          reason?: string
+          receipt_id?: string
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -22422,6 +20215,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "candidate"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vetting_decision_tenant_id_candidate_id_fkey"
+            columns: ["tenant_id", "candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidate"
+            referencedColumns: ["tenant_id", "id"]
           },
         ]
       }
@@ -22468,109 +20268,52 @@ export type Database = {
     Tables: {
       assignment: {
         Row: {
-          advanced_usage_pattern_id: string | null
-          agent_skill_id: string | null
-          ai_model_id: string | null
-          ai_protocol_id: string | null
-          benchmark_id: string | null
-          case_study_id: string | null
-          concept_id: string | null
           confidence: number | null
           created_at: string
           created_by_receipt_id: string | null
-          dataset_id: string | null
-          failure_mode_id: string | null
           id: string
           lesson_id: string | null
-          library_id: string | null
-          mcp_server_id: string | null
           method: string
-          organization_id: string | null
-          paper_id: string | null
-          person_id: string | null
-          product_id: string | null
           provenance_claim_id: string | null
-          repository_id: string | null
           review_task_id: string | null
-          solution_pattern_id: string | null
-          talk_id: string | null
-          target_kind: string | null
-          technical_problem_id: string | null
+          target_entity_id: string | null
+          target_record_id: string | null
           tenant_id: string
           term_id: string
           valid_from: string
           valid_to: string | null
-          video_id: string | null
         }
         Insert: {
-          advanced_usage_pattern_id?: string | null
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_protocol_id?: string | null
-          benchmark_id?: string | null
-          case_study_id?: string | null
-          concept_id?: string | null
           confidence?: number | null
           created_at?: string
           created_by_receipt_id?: string | null
-          dataset_id?: string | null
-          failure_mode_id?: string | null
           id?: string
           lesson_id?: string | null
-          library_id?: string | null
-          mcp_server_id?: string | null
           method: string
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
           provenance_claim_id?: string | null
-          repository_id?: string | null
           review_task_id?: string | null
-          solution_pattern_id?: string | null
-          talk_id?: string | null
-          target_kind?: string | null
-          technical_problem_id?: string | null
+          target_entity_id?: string | null
+          target_record_id?: string | null
           tenant_id?: string
           term_id: string
           valid_from?: string
           valid_to?: string | null
-          video_id?: string | null
         }
         Update: {
-          advanced_usage_pattern_id?: string | null
-          agent_skill_id?: string | null
-          ai_model_id?: string | null
-          ai_protocol_id?: string | null
-          benchmark_id?: string | null
-          case_study_id?: string | null
-          concept_id?: string | null
           confidence?: number | null
           created_at?: string
           created_by_receipt_id?: string | null
-          dataset_id?: string | null
-          failure_mode_id?: string | null
           id?: string
           lesson_id?: string | null
-          library_id?: string | null
-          mcp_server_id?: string | null
           method?: string
-          organization_id?: string | null
-          paper_id?: string | null
-          person_id?: string | null
-          product_id?: string | null
           provenance_claim_id?: string | null
-          repository_id?: string | null
           review_task_id?: string | null
-          solution_pattern_id?: string | null
-          talk_id?: string | null
-          target_kind?: string | null
-          technical_problem_id?: string | null
+          target_entity_id?: string | null
+          target_record_id?: string | null
           tenant_id?: string
           term_id?: string
           valid_from?: string
           valid_to?: string | null
-          video_id?: string | null
         }
         Relationships: [
           {
@@ -22621,10 +20364,10 @@ export type Database = {
         }
         Insert: {
           canonical_schema?: string
-          canonical_table: string
+          canonical_table?: string
           code: string
           description: string
-          label: string
+          label?: string
         }
         Update: {
           canonical_schema?: string
@@ -22708,6 +20451,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      relationship_kind: {
+        Row: {
+          code: string
+          description: string
+          from_kinds: string[]
+          inverse_label: string | null
+          property_schema: Json
+          symmetric: boolean
+          temporal: boolean
+          to_kinds: string[]
+        }
+        Insert: {
+          code: string
+          description: string
+          from_kinds: string[]
+          inverse_label?: string | null
+          property_schema?: Json
+          symmetric?: boolean
+          temporal: boolean
+          to_kinds: string[]
+        }
+        Update: {
+          code?: string
+          description?: string
+          from_kinds?: string[]
+          inverse_label?: string | null
+          property_schema?: Json
+          symmetric?: boolean
+          temporal?: boolean
+          to_kinds?: string[]
+        }
+        Relationships: []
       }
       term: {
         Row: {
@@ -22840,6 +20616,564 @@ export type Database = {
       [_ in never]: never
     }
   }
+  temporal: {
+    Tables: {
+      event: {
+        Row: {
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          kind: string
+          object_entity_id: string | null
+          relationship_id: string | null
+          subject_entity_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind: string
+          object_entity_id?: string | null
+          relationship_id?: string | null
+          subject_entity_id: string
+          tenant_id?: string
+        }
+        Update: {
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind?: string
+          object_entity_id?: string | null
+          relationship_id?: string | null
+          subject_entity_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_kind_fkey"
+            columns: ["kind"]
+            isOneToOne: false
+            referencedRelation: "event_kind"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      event_kind: {
+        Row: {
+          code: string
+          description: string
+          ends_stream_kind: string | null
+          object_kinds: string[] | null
+          starts_stream_kind: string | null
+          subject_kinds: string[]
+        }
+        Insert: {
+          code: string
+          description: string
+          ends_stream_kind?: string | null
+          object_kinds?: string[] | null
+          starts_stream_kind?: string | null
+          subject_kinds: string[]
+        }
+        Update: {
+          code?: string
+          description?: string
+          ends_stream_kind?: string | null
+          object_kinds?: string[] | null
+          starts_stream_kind?: string | null
+          subject_kinds?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_kind_ends_stream_kind_fkey"
+            columns: ["ends_stream_kind"]
+            isOneToOne: false
+            referencedRelation: "stream_kind"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "event_kind_starts_stream_kind_fkey"
+            columns: ["starts_stream_kind"]
+            isOneToOne: false
+            referencedRelation: "stream_kind"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      event_occurrence: {
+        Row: {
+          belief: string
+          created_at: string
+          event_id: string
+          extent_id: string | null
+          id: string
+          k_from: number
+          k_to: number | null
+          occurred_during: unknown
+          occurrence_mode: string
+          payload: Json
+          primary_claim_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          belief?: string
+          created_at?: string
+          event_id: string
+          extent_id?: string | null
+          id?: string
+          k_from: number
+          k_to?: number | null
+          occurred_during: unknown
+          occurrence_mode: string
+          payload?: Json
+          primary_claim_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          belief?: string
+          created_at?: string
+          event_id?: string
+          extent_id?: string | null
+          id?: string
+          k_from?: number
+          k_to?: number | null
+          occurred_during?: unknown
+          occurrence_mode?: string
+          payload?: Json
+          primary_claim_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_occurrence_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_occurrence_extent_id_fkey"
+            columns: ["extent_id"]
+            isOneToOne: false
+            referencedRelation: "extent"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_occurrence_tenant_id_event_id_fkey"
+            columns: ["tenant_id", "event_id"]
+            isOneToOne: false
+            referencedRelation: "event"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "event_occurrence_tenant_id_extent_id_fkey"
+            columns: ["tenant_id", "extent_id"]
+            isOneToOne: false
+            referencedRelation: "extent"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      extent: {
+        Row: {
+          earliest: string | null
+          id: string
+          latest: string | null
+          locator_id: string | null
+          precision: string
+          source_text: string | null
+          tenant_id: string
+          timezone: string | null
+        }
+        Insert: {
+          earliest?: string | null
+          id?: string
+          latest?: string | null
+          locator_id?: string | null
+          precision: string
+          source_text?: string | null
+          tenant_id?: string
+          timezone?: string | null
+        }
+        Update: {
+          earliest?: string | null
+          id?: string
+          latest?: string | null
+          locator_id?: string | null
+          precision?: string
+          source_text?: string | null
+          tenant_id?: string
+          timezone?: string | null
+        }
+        Relationships: []
+      }
+      knowledge_batch: {
+        Row: {
+          idempotency_key: string
+          input_digest: string
+          knowledge_seq: number
+          operation_id: string | null
+          receipt_id: string
+          recorded_at: string
+          summary: Json
+          tenant_id: string
+        }
+        Insert: {
+          idempotency_key: string
+          input_digest: string
+          knowledge_seq: number
+          operation_id?: string | null
+          receipt_id: string
+          recorded_at?: string
+          summary?: Json
+          tenant_id?: string
+        }
+        Update: {
+          idempotency_key?: string
+          input_digest?: string
+          knowledge_seq?: number
+          operation_id?: string | null
+          receipt_id?: string
+          recorded_at?: string
+          summary?: Json
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      knowledge_head: {
+        Row: {
+          knowledge_seq: number
+          open_k: number | null
+          open_xid: unknown
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          knowledge_seq?: number
+          open_k?: number | null
+          open_xid?: unknown
+          tenant_id?: string
+          updated_at?: string
+        }
+        Update: {
+          knowledge_seq?: number
+          open_k?: number | null
+          open_xid?: unknown
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      segment: {
+        Row: {
+          amount: number | null
+          belief: string
+          caused_by_event_id: string | null
+          created_at: string
+          currency: string | null
+          extent_id: string | null
+          id: string
+          k_from: number
+          k_to: number | null
+          payload: Json
+          primary_claim_id: string | null
+          ref_entity_id: string | null
+          replaces_segment_id: string | null
+          specification_id: string | null
+          status: string | null
+          stream_id: string
+          temporal_basis: string
+          tenant_id: string
+          unit: string | null
+          valid_during: unknown
+        }
+        Insert: {
+          amount?: number | null
+          belief?: string
+          caused_by_event_id?: string | null
+          created_at?: string
+          currency?: string | null
+          extent_id?: string | null
+          id?: string
+          k_from: number
+          k_to?: number | null
+          payload?: Json
+          primary_claim_id?: string | null
+          ref_entity_id?: string | null
+          replaces_segment_id?: string | null
+          specification_id?: string | null
+          status?: string | null
+          stream_id: string
+          temporal_basis: string
+          tenant_id?: string
+          unit?: string | null
+          valid_during: unknown
+        }
+        Update: {
+          amount?: number | null
+          belief?: string
+          caused_by_event_id?: string | null
+          created_at?: string
+          currency?: string | null
+          extent_id?: string | null
+          id?: string
+          k_from?: number
+          k_to?: number | null
+          payload?: Json
+          primary_claim_id?: string | null
+          ref_entity_id?: string | null
+          replaces_segment_id?: string | null
+          specification_id?: string | null
+          status?: string | null
+          stream_id?: string
+          temporal_basis?: string
+          tenant_id?: string
+          unit?: string | null
+          valid_during?: unknown
+        }
+        Relationships: [
+          {
+            foreignKeyName: "segment_caused_by_event_id_fkey"
+            columns: ["caused_by_event_id"]
+            isOneToOne: false
+            referencedRelation: "event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_extent_id_fkey"
+            columns: ["extent_id"]
+            isOneToOne: false
+            referencedRelation: "extent"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_replaces_segment_id_fkey"
+            columns: ["replaces_segment_id"]
+            isOneToOne: false
+            referencedRelation: "segment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_stream_id_fkey"
+            columns: ["stream_id"]
+            isOneToOne: false
+            referencedRelation: "stream"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "segment_tenant_id_caused_by_event_id_fkey"
+            columns: ["tenant_id", "caused_by_event_id"]
+            isOneToOne: false
+            referencedRelation: "event"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "segment_tenant_id_extent_id_fkey"
+            columns: ["tenant_id", "extent_id"]
+            isOneToOne: false
+            referencedRelation: "extent"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "segment_tenant_id_replaces_segment_id_fkey"
+            columns: ["tenant_id", "replaces_segment_id"]
+            isOneToOne: false
+            referencedRelation: "segment"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "segment_tenant_id_stream_id_fkey"
+            columns: ["tenant_id", "stream_id"]
+            isOneToOne: false
+            referencedRelation: "stream"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      stream: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          scope_key: string
+          subject_entity_id: string | null
+          subject_relationship_id: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          scope_key?: string
+          subject_entity_id?: string | null
+          subject_relationship_id?: string | null
+          tenant_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          scope_key?: string
+          subject_entity_id?: string | null
+          subject_relationship_id?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stream_kind_fkey"
+            columns: ["kind"]
+            isOneToOne: false
+            referencedRelation: "stream_kind"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      stream_kind: {
+        Row: {
+          code: string
+          description: string
+          payload_schema: Json
+          ref_entity_kinds: string[] | null
+          requires_amount: boolean
+          requires_ref_entity: boolean
+          status_values: string[] | null
+          subject_kinds: string[]
+          subject_mode: string
+          unit_values: string[] | null
+        }
+        Insert: {
+          code: string
+          description: string
+          payload_schema?: Json
+          ref_entity_kinds?: string[] | null
+          requires_amount?: boolean
+          requires_ref_entity?: boolean
+          status_values?: string[] | null
+          subject_kinds?: string[]
+          subject_mode: string
+          unit_values?: string[] | null
+        }
+        Update: {
+          code?: string
+          description?: string
+          payload_schema?: Json
+          ref_entity_kinds?: string[] | null
+          requires_amount?: boolean
+          requires_ref_entity?: boolean
+          status_values?: string[] | null
+          subject_kinds?: string[]
+          subject_mode?: string
+          unit_values?: string[] | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      admit_support: {
+        Args: {
+          p_claim: string
+          p_locator: string
+          p_occurrence: string
+          p_role?: string
+          p_segment: string
+        }
+        Returns: string
+      }
+      assert_event: {
+        Args: {
+          p_belief?: string
+          p_claim?: string
+          p_dedupe_key?: string
+          p_extent?: string
+          p_kind: string
+          p_mode?: string
+          p_object?: string
+          p_occurred_during: unknown
+          p_payload?: Json
+          p_relationship?: string
+          p_subject: string
+        }
+        Returns: string
+      }
+      assert_relationship: {
+        Args: {
+          p_claim?: string
+          p_episode?: number
+          p_extent?: string
+          p_from: string
+          p_kind: string
+          p_properties?: Json
+          p_qualifier?: string
+          p_to: string
+          p_valid_during?: unknown
+        }
+        Returns: string
+      }
+      assert_state: {
+        Args: {
+          p_amount?: number
+          p_belief?: string
+          p_claim?: string
+          p_currency?: string
+          p_entity: string
+          p_extent?: string
+          p_payload?: Json
+          p_ref_entity?: string
+          p_relationship?: string
+          p_scope_key?: string
+          p_specification?: string
+          p_status?: string
+          p_stream_kind: string
+          p_temporal_basis?: string
+          p_unit?: string
+          p_valid_during: unknown
+        }
+        Returns: string
+      }
+      begin_batch: { Args: { p_expected_head?: number }; Returns: number }
+      close_segment: { Args: { p_segment: string }; Returns: undefined }
+      commit_batch: {
+        Args: {
+          p_idempotency_key: string
+          p_input_digest: string
+          p_receipt: string
+          p_summary?: Json
+        }
+        Returns: number
+      }
+      current_k: { Args: never; Returns: number }
+      emit_outbox: {
+        Args: { p_k: number; p_payload: Json; p_topic: string }
+        Returns: string
+      }
+      make_extent: {
+        Args: {
+          p_earliest?: string
+          p_latest?: string
+          p_locator?: string
+          p_precision: string
+          p_source_text: string
+          p_timezone?: string
+        }
+        Returns: string
+      }
+      payload_valid: {
+        Args: { p_schema: Json; p_value: Json }
+        Returns: boolean
+      }
+      withdraw_support: { Args: { p_support: string }; Returns: undefined }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   util: {
     Tables: {
       [_ in never]: never
@@ -22900,7 +21234,8 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -22924,7 +21259,8 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -22948,7 +21284,8 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -23332,6 +21669,9 @@ export const Constants = {
     Enums: {
       facet_status: ["draft", "active", "retired"],
     },
+  },
+  temporal: {
+    Enums: {},
   },
   util: {
     Enums: {},
