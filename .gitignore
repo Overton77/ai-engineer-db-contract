@@ -5,3 +5,6 @@ node_modules/
 supabase/.branches/
 supabase/.temp/
 *.log
+
+
+internal_hidden_docs/
