@@ -11,6 +11,8 @@ Applications consume this repository as a pinned dependency. They do not maintai
 
 The deployed knowledge model is documented in [Schema summary](docs/knowledge-model/SCHEMA-SUMMARY.md) and [Migration result](docs/knowledge-model/MIGRATION-RESULT.md). Contract 0.3.0 targets the cloud database; the populated local shared database was left unchanged. Use an explicit project ID when regenerating the cloud contract.
 
+Contract **0.4.0** adds [research report packages v1](docs/knowledge-model/REPORTS.md), deployed to the same identified cloud project with migration head `20260913020000`. The private `research-reports` bucket stores immutable report files; table projections retain sections, assertions, coverage and ingestion lineage. [Deployment evidence](docs/knowledge-model/REPORT-CONTRACT-DEPLOYMENT.json) verifies preservation of existing report and protected starter content. Import report row types from `@aiengineer/database-contract/reports`.
+
 ## Schema boundaries
 
 - `public` contains the existing pre-research pipeline (`public.research_*`) and preserved factory tables.

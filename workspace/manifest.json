@@ -1,0 +1,56 @@
+{
+  "budgets": {
+    "domain_bytes": 8192,
+    "relation_details_bytes": 16384,
+    "relation_main_bytes": 6144,
+    "schema_readme_bytes": 16384,
+    "search_index_bytes": 524288,
+    "task_bytes": 5120
+  },
+  "build": {
+    "catalog_version": "sha256:676cd969982cc209c22a5af41ed0dc522e563a827b2e0259e420b8c9539b13ba",
+    "contract_version": "0.4.7",
+    "enrichment_sha256": "sha256:50aa2136fd499f1be0a2b04ffad86fa9da1614b3f96034190b0a47afe6781b1c",
+    "fingerprint": "sha256:bb14833df6a9d13b65f5f5521802860ab95c3082cb433f0c4fbcd7241bfc728e",
+    "generated_types_sha256": "sha256:657f09dc6ee8bbb8fd378270ddd8f372fcb397051e137b590b10e1f6c91f3018",
+    "migration_head": "20260914010700",
+    "renderer_version": "3.0.0",
+    "rules_version": "ingestion-rules.v1@519cea73ea54e133eab6d38d8f92a9a1e9af1e44585078ac40d9c68cef068e23",
+    "volatile": {
+      "introspected_at": "2026-09-14T01:43:48.433Z",
+      "source": {
+        "kind": "local_disposable"
+      }
+    },
+    "workspace_fingerprint": "sha256:b0b1edb4bb695c5b199c50ded01dfd5e79e272140d5c133893b4a1a6f008c4c2"
+  },
+  "entry_points": [
+    "START_HERE.md",
+    "INDEX.md",
+    "relations.txt",
+    "queries/README.md",
+    "rules/README.md"
+  ],
+  "format": "ai-engineer-schema-workspace/3",
+  "layers": {
+    "domains": 18,
+    "functions": 202,
+    "queries": 35,
+    "relation_details": 41,
+    "relation_stubs": 0,
+    "relations": 373,
+    "schemas": 20,
+    "tasks": 19,
+    "types": 12,
+    "vocabularies": 12
+  },
+  "scope": null,
+  "sizes": {
+    "files": 708,
+    "largest": {
+      "bytes": 4577793,
+      "path": "schema-ir.json"
+    },
+    "total_bytes": 7429897
+  }
+}

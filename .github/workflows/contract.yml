@@ -19,3 +19,8 @@ jobs:
       - run: npm run db:start
       - run: npm run db:reset
       - run: npm run types:check
+      - run: npm test
+      # Committed workspace must match the reset database (structure, grants, vocabularies, generated types).
+      - run: npm run workspace:check -- --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      # Committed pages must re-render byte-for-byte from the committed IR, and every catalog example must execute.
+      - run: npm run workspace:validate -- --db-url postgresql://postgres:postgres@127.0.0.1:54322/postgres

@@ -1,0 +1,12 @@
+{
+  "fingerprint": "sha256:bb14833df6a9d13b65f5f5521802860ab95c3082cb433f0c4fbcd7241bfc728e",
+  "inputs": {
+    "contract_version": "0.4.7",
+    "enrichment_sha256": "sha256:50aa2136fd499f1be0a2b04ffad86fa9da1614b3f96034190b0a47afe6781b1c",
+    "generated_types_sha256": "sha256:657f09dc6ee8bbb8fd378270ddd8f372fcb397051e137b590b10e1f6c91f3018",
+    "migration_head": "20260914010700",
+    "renderer_version": "3.0.0"
+  },
+  "scope": null,
+  "workspace_fingerprint": "sha256:b0b1edb4bb695c5b199c50ded01dfd5e79e272140d5c133893b4a1a6f008c4c2"
+}
